@@ -1,7 +1,7 @@
 ---
 title: flutter跨组件通信
 date: 2022-11-03 16:18:53
-tags:
+tags: flutter
 ---
 
 # flutter 跨组件通信

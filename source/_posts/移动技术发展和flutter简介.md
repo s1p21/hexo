@@ -1,7 +1,7 @@
 ---
 title: 移动技术发展&flutter简介
 date: 2022-11-03 16:18:02
-tags:
+tags: flutter
 ---
 
 # 移动技术发展及 flutter 简介
