@@ -88,7 +88,7 @@ music:
   type: playlist #require song, playlist, album, search, artist
   id: 503838841 #require	song id / playlist id / album id / search keyword
   fixed: true # 开启吸底模式
-  autoplay: false # 是否自动播放
+  autoplay: true # 是否自动播放
   theme: "#42b983"
   loop: "all" # 音频循环播放, 可选值: 'all', 'one', 'none'
   order: "random" # 音频循环顺序, 可选值: 'list', 'random'
@@ -160,13 +160,13 @@ indexbtn:
 # icon/button will not show up if you leave the corresponding socialLink empty
 # 首页 banner 中的第二行个人信息配置，留空即不启用
 socialLink:
-  github: https://github.com/blinkfox
-  email: 1181062873@qq.com
-  facebook: # https://www.facebook.com/xxx
-  twitter: # https://twitter.com/xxx
-  qq: 1181062873
-  weibo: # https://weibo.com/xxx
-  zhihu: # https://www.zhihu.com/xxx
+  github: https://github.com/s1p21
+  email: 269438272@qq.com
+  qq: 269438272
+  facebook: https://www.facebook.com/s1p21
+  twitter: https://twitter.com/s1p21
+  weibo: https://weibo.com/s1p21
+  zhihu: https://www.zhihu.com/s1p21
   rss: true # true、false
 
 # Whether to activate the Post TOC, and Configure which title types are supported by TOC support.
@@ -286,7 +286,7 @@ myProjects:
 mySkills:
   enable: true
   data:
-    Java:
+    Node:
       background: "linear-gradient(to right, #FF0066 0%, #FF00CC 100%)"
       percent: 85%
     JavaScript:
@@ -300,7 +300,7 @@ mySkills:
       percent: 70%
     SQL:
       background: "linear-gradient(to right, #4CAF50 0%, #81C784 100%)"
-      percent: 90%
+      percent: 60%
     程序设计:
       background: "linear-gradient(to right, #FFEB3B 0%, #FFF176 100%)"
       percent: 75%
@@ -408,7 +408,7 @@ changyan:
 # 配置是否在 header 中显示 fork me on github 的图标，默认为true，你可以修改为你的仓库地址.
 githubLink:
   enable: true
-  url: https://github.com/blinkfox/hexo-theme-matery
+  url: https://github.com/s1p21/hexo
   title: Fork Me
 
 # The configuration of the Twikoo comment module is not activated by default.
@@ -629,8 +629,8 @@ subtitle:
   typeSpeed: 100 # 打字速度
   backSpeed: 50 # 删除速度
   sub:
-    - 从来没有真正的绝境, 只有心灵的迷途
-    - Never really desperate, only the lost of the soul
+    - 求知若饥，虚心若愚
+    - Stay hungry，Stay foolish
 
 # 手机二级菜单.
 navMenu:
