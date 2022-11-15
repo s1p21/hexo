@@ -110,7 +110,7 @@ export default class App extends React.PureComponent<Props> {
 }
 ```
 
-    结论：结论同上，依赖的props改变了，因为父组件是hook模式，每次更新都是直接导出新的value和state.
+结论：结论同上，依赖的 props 改变了，因为父组件是 hook 模式，每次更新都是直接导出新的 value 和 state.
 
 #### 3. hook 的 setState 和 类组件的 setState 有什么不一样
 
@@ -154,7 +154,7 @@ export default function Test() {
 }
 ```
 
-    结论：class的setState，如果你传入的是对象，那么就会被异步合并，如果传入的是函数，那么就会立马执行替换，而hook的setState是直接替换。
+结论：class 的 setState，如果你传入的是对象，那么就会被异步合并，如果传入的是函数，那么就会立马执行替换，而 hook 的 setState 是直接替换。
 
 #### 4. 父组件使用 class 子组件使用 hook
 
@@ -197,7 +197,7 @@ export default function App(props: Props) {
 }
 ```
 
-    结论：父组件(class组件)调用setState,刷新自身，然后传递给hooks子组件，然后子组件重新调用，更新
+结论：父组件(class 组件)调用 setState,刷新自身，然后传递给 hooks 子组件，然后子组件重新调用，更新。
 
 #### 5. hook,setState 每次都是相同的值
 
@@ -227,7 +227,7 @@ export default class App extends React.PureComponent {
 }
 ```
 
-    结论：由于每次设置的值都是一样的（都是1），hooks不会更新，同class。
+结论：由于每次设置的值都是一样的（都是 1），hooks 不会更新，同 class。
 
 #### 6. 父组件和子组件都使用 hook，父组件传递 count，子组件使用 count，父组件传入 count 给子组件
 
@@ -275,13 +275,8 @@ export default memo(App);
 ```
 
 优化点：
-React.memo、
-useMemo、
+React.memo、useMemo、
 useCallback：useCallback 就是返回一个函数，只有在依赖项发生变化的时候才会更新（返回一个新的函数）
-
-question1: useEffect 依赖项是一个空的数组。
-
-answer1: 只触发一次
 
 ## 优化方案
 
@@ -370,6 +365,7 @@ exportdefault React.memo(MyComponent, areEqual);
 #### 2.2 useCallback
 
 首先看代码
+
 父组件 index.js
 
 ```ts
@@ -553,7 +549,7 @@ function App() {
 
 useMemo 的使用场景主要是用来缓存计算量比较大的函数结果，可以避免不必要的重复计算，有过 vue 的使用经历同学可能会觉得跟 Vue 里面的计算属性有异曲同工的作用。
 
-不过另外提醒两点
+不过另外提醒两点：
 
 一、如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值；
 
