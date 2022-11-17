@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "hexo-deployer-git": "^3.0.0",
+    "hexo-permalink-pinyin": "1.1.0",
     "hexo-prism-plugin": "2.3.0"
   }
 }

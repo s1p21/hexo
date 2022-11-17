@@ -1,7 +1,7 @@
 ---
 title: react-native
 date: 2022-11-04 11:51:43
-tags: react-native RN
+tags: [react-native, RN]
 ---
 
 ## react-native
