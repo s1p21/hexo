@@ -34,6 +34,12 @@
     </a>
 <% } %>
 
+<% if (theme.socialLink.wechat) { %>
+    <a href="https://weixin.qq.com/" class="tooltipped" target="_blank" data-tooltip="微信搜索: <%= theme.socialLink.wechat %>" data-position="top" data-delay="50">
+        <i class="fab fa-weixin"></i>
+    </a>
+<% } %>
+
 <% if (theme.socialLink.zhihu) { %>
     <a href="<%= theme.socialLink.zhihu %>" class="tooltipped" target="_blank" data-tooltip="关注我的知乎: <%= theme.socialLink.zhihu %>" data-position="top" data-delay="50">
         <i class="fab fa-zhihu1">知</i>

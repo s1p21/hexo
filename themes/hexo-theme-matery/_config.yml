@@ -7,9 +7,9 @@ menu:
   Tags:
     url: /tags
     icon: fas fa-tags
-  Categories:
-    url: /categories
-    icon: fas fa-bookmark
+  # Categories:
+  #   url: /categories
+  #   icon: fas fa-bookmark
   Archives:
     url: /archives
     icon: fas fa-archive
@@ -19,9 +19,9 @@ menu:
   Contact:
     url: /contact
     icon: fas fa-comments
-  Friends:
-    url: /friends
-    icon: fas fa-address-book
+  # Friends:
+  #   url: /friends
+  #   icon: fas fa-address-book
   # 二级菜单写法如下
   #Medias:
   #  icon: fas fa-list
@@ -162,6 +162,7 @@ indexbtn:
 socialLink:
   github: https://github.com/s1p21
   email: 269438272@qq.com
+  wechat: s1p21wt
   qq: 269438272
   facebook: https://www.facebook.com/s1p21
   twitter: https://twitter.com/s1p21
@@ -575,8 +576,8 @@ reprint:
 
 # DaoVoice online contact
 daovoice:
-  enable: false
-  app_id:
+  enable: true
+  app_id: 89660989
 
 # Tidio online contact
 tidio:
@@ -586,7 +587,7 @@ tidio:
 # 腾讯兔小巢，见https://txc.qq.com/
 tuxiaochao:
   enable: false
-  productId:
+  productId: 460977
 #背景canvas-nest
 canvas_nest:
   enable: false
@@ -606,7 +607,7 @@ ribbon:
 
 # 背景动态彩带.
 ribbon_dynamic:
-  enable: false
+  enable: true
 
 # sharejs文章分享模块.
 # 支持顺序，可选项目为twitter, facebook, google, qq, qzone, wechat, weibo, douban, linkedin.
