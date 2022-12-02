@@ -9,7 +9,8 @@ tags: [面试,css]
  三栏布局:双飞翼布局 三栏都采用左浮动
  
  
-```
+```css
+
  #main{
   background-color:aqua;
   width:100%;
@@ -46,10 +47,11 @@ tags: [面试,css]
 
 #### 2. 对于一些常见css的书写:比如文本溢出显示省略号
 
-```
+```css
+
 text-overflow:ellipsis
 
-##多行
+#多行
 display:-webkit-box
 -webkit-line-clamp:2;
 

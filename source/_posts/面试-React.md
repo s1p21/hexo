@@ -1,0 +1,138 @@
+---
+title: 面试-React
+date: 2022-11-30 12:33:51
+tags: [面试, React]
+---
+
+#### react生命周期
+- constructor（并不属于生命周期 - 初始化 state，初始化参数）
+- static getDerivedStateFormPorps - 组件 props 变化时更新 state
+- componentDidMount - 网络请求，添加监听事件等
+- shouldComponentUpdate - 通过判断新传入的 props，优化性能，避免重复渲染
+- static getSnapshopBeforeUpdate - 很少用，组件更新之前捕获一些信息（例如滚动位置）
+- componentDidUpdate - 组件更新完成后的一些操作
+- componentWillUnmount - 卸载监听事件，卸载计时器等
+- componentDidUnmount()
+
+#### react Fiber
+
+React 的核心流程可以分为两个部分:
+
+reconciliation (调度算法，也可称为 render):
+
+更新 state 与 props；
+调用生命周期钩子；
+生成 virtual dom；
+
+这里应该称为 Fiber Tree 更为符合；
+
+
+通过新旧 vdom 进行 diff 算法，获取 vdom change；
+确定是否需要重新渲染
+
+
+commit:
+
+如需要，则操作 dom 节点更新；
+
+
+
+要了解 Fiber，我们首先来看为什么需要它？
+
+
+问题: 随着应用变得越来越庞大，整个更新渲染的过程开始变得吃力，大量的组件渲染会导致主进程长时间被占用，导致一些动画或高频操作出现卡顿和掉帧的情况。而关键点，便是 同步阻塞。在之前的调度算法中，React 需要实例化每个类组件，生成一颗组件树，使用 同步递归 的方式进行遍历渲染，而这个过程最大的问题就是无法 暂停和恢复。
+
+
+解决方案: 解决同步阻塞的方法，通常有两种: 异步 与 任务分割。而 React Fiber 便是为了实现任务分割而诞生的。
+
+
+简述:
+
+在 React V16 将调度算法进行了重构， 将之前的 stack reconciler 重构成新版的 fiber reconciler，变成了具有链表和指针的 单链表树遍历算法。通过指针映射，每个单元都记录着遍历当下的上一步与下一步，从而使遍历变得可以被暂停和重启。
+这里我理解为是一种 任务分割调度算法，主要是 将原先同步更新渲染的任务分割成一个个独立的 小任务单位，根据不同的优先级，将小任务分散到浏览器的空闲时间执行，充分利用主进程的事件循环机制。
+
+
+
+核心:
+
+Fiber 这里可以具象为一个 数据结构:
+
+```ts
+class Fiber {
+	constructor(instance) {
+		this.instance = instance
+		// 指向第一个 child 节点
+		this.child = child
+		// 指向父节点
+		this.return = parent
+		// 指向第一个兄弟节点
+		this.sibling = previous
+	}	
+}
+```
+
+链表树遍历算法: 通过 节点保存与映射，便能够随时地进行 停止和重启，这样便能达到实现任务分割的基本前提；
+
+1、首先通过不断遍历子节点，到树末尾；
+2、开始通过 sibling 遍历兄弟节点；
+3、return 返回父节点，继续执行2；
+4、直到 root 节点后，跳出遍历；
+
+
+
+任务分割，React 中的渲染更新可以分成两个阶段:
+
+reconciliation 阶段: vdom 的数据对比，是个适合拆分的阶段，比如对比一部分树后，先暂停执行个动画调用，待完成后再回来继续比对。
+Commit 阶段: 将 change list 更新到 dom 上，并不适合拆分，才能保持数据与 UI 的同步。否则可能由于阻塞 UI 更新，而导致数据更新和 UI 不一致的情况。
+
+
+
+分散执行: 任务分割后，就可以把小任务单元分散到浏览器的空闲期间去排队执行，而实现的关键是两个新API: `requestIdleCallback` 与 `requestAnimationFrame`
+
+低优先级的任务交给`requestIdleCallback`处理，这是个浏览器提供的事件循环空闲期的回调函数，需要 pollyfill，而且拥有 deadline 参数，限制执行事件，以继续切分任务；
+高优先级的任务交给`requestAnimationFrame`处理；
+
+
+```ts
+// 类似于这样的方式
+requestIdleCallback((deadline) => {
+    // 当有空闲时间时，我们执行一个组件渲染；
+    // 把任务塞到一个个碎片时间中去；
+    while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && nextComponent) {
+        nextComponent = performWork(nextComponent);
+    }
+});
+```
+优先级策略: 文本框输入 > 本次调度结束需完成的任务 > 动画过渡 > 交互反馈 > 数据更新 > 不会显示但以防将来会显示的任务
+
+Fiber 其实可以算是一种编程思想，在其它语言中也有许多应用(Ruby Fiber)。核心思想是 任务拆分和协同，主动把执行权交给主线程，使主线程有时间空挡处理其他高优先级任务。
+
+
+#### react 优化
+pureComponent 浅比较
+shouldComponentUpdate 深比较
+
+hooks优化
+React.memo
+react.
+useMemo useMemo 是一种缓存机制提速，当它的依赖未发生改变时，就不会触发重新计算。
+useCallback  针对传入子组件的为函数，进行优化使用，因为函数式组件每次发生渲染，都会从头执行，两次的callBack函数发生了改变，导致子组件渲染。useCallback 针对函数进行记忆，从而避免触发渲染。
+
+
+#### setState 是异步还是同步的？
+在React管理的事件回调和生命周期中，是异步的，其他是同步的，因为来做批量更新，减少渲染。
+但在函数式组件中不存在这个问题。因为函数组件中生成的函数是通过闭包引用了 state，而不是通过 this.state 的方式引用 state，所以函数组件的处理函数中 state 一定是旧值，不可能是新值。可以说函数组件已经将这个问题屏蔽掉了。
+
+
+#### Redux
+state
+Action
+reducer 处理state
+
+
+#### 函数式编程
+纯函数
+函数复合
+数据不可变性
+函数式编程其实是一种编程思想，它追求更细的粒度，将应用拆分成一组组极小的单元函数，组合调用操作数据流；
+它提倡着 纯函数 / 函数复合 / 数据不可变， 谨慎对待函数内的 状态共享 / 依赖外部 / 副作用；

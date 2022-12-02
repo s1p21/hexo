@@ -316,7 +316,7 @@ ReactDOM.render(<App />, rootElement);
 
 在同级目录有一个 child.js
 
-```
+```ts
 
 // child.js
 import React from"react";

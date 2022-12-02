@@ -335,7 +335,8 @@ React 组件分为两类，一类是类组件，一类是函数组件，不论�
 
 一个元素的 key 最好是这个元素在列表中拥有的一个独一无二的字符串。通常，我们使用来自数据 id 来作为元素的 key
 
-```
+```ts
+
 const numbers = [1, 2, 3, 4, 5];
 const listItems = numbers.map((number) =>
   <li key={number.toString()}>
@@ -393,25 +394,26 @@ class Person {
 
    不要改变原始组件，会产生一些不良后果
 
-   ```
-   function logProps(InputComponent) {
-     InputComponent.prototype.componentWillReceiveProps = function(nextProps) {
-       console.log('Current props: ', this.props);
-       console.log('Next props: ', nextProps);
-     };
-     // 返回原始的 input 组件，暗示它已经被修改。
-     return InputComponent;
-   }
+```ts
 
-   // 每次调用 logProps 时，增强组件都会有 log 输出。
-   const EnhancedComponent = logProps(InputComponent);
-   ```
+function logProps(InputComponent) {
+  InputComponent.prototype.componentWillReceiveProps = function(nextProps) {
+    console.log('Current props: ', this.props);
+    console.log('Next props: ', nextProps);
+  };
+  // 返回原始的 input 组件，暗示它已经被修改。
+  return InputComponent;
+}
+
+// 每次调用 logProps 时，增强组件都会有 log 输出。
+const EnhancedComponent = logProps(InputComponent);
+```
 
 2. **将不相关的 props 传递给被包裹的组件**
 
    对需要处理的属性进行劫持，剩下的属性不做改变
 
-   ```
+   ```ts
    render() {
      // 过滤掉非此 HOC 额外的 props，且不要进行透传
      const { extraProp, ...passThroughProps } = this.props;
@@ -434,7 +436,7 @@ class Person {
 
    当我们需要传入其他参数时，一般使用函数柯里化的方式，举例：
 
-   ```
+   ```ts
    LayoutHoc(component)
 
    // 当需要额外参数时，采用函数柯里化的方式
@@ -445,7 +447,7 @@ class Person {
 
    为了方便调试，可以设置显示名称，以表明它是 HOC 的产物。
 
-   ```
+   ```ts
    function withLayout(WrappedComponent) {
      class WithSubscription extends React.Component {/* ... */}
      withLayout = `withLayout(${getDisplayName(WrappedComponent)})`;
@@ -466,7 +468,7 @@ class Person {
 
 1. **不要在 render 方法中使用 HOC**
 
-   ```
+   ```ts
    render() {
      // 每次调用 render 函数都会创建一个新的 EnhancedComponent
      // EnhancedComponent1 !== EnhancedComponent2
@@ -528,7 +530,7 @@ class Person {
 5. 当然，不一定要用 render 属性，很常见的一种做法是使用 children 属性
 6. 因为 children 属性可以写在标签里面，让我们的代码更清晰
 
-```
+```ts
 class Mouse extends React.Component {
   constructor(props) {
     super(props);
@@ -576,7 +578,7 @@ class Mouse extends React.Component {
 
   当我们传入一个回调函数给 ref 属性，react 会在组件挂载到真实 dom 后，把组件的实例传入函数，然后我们可以用一个值来接收这个实例
 
-  ```
+  ```ts
   render(){
   	return (
   		<div>
@@ -591,7 +593,7 @@ class Mouse extends React.Component {
 
 - **createRef**
 
-  ```
+  ```ts
   constructor(){
   	this.btnRef = React.createRef()
   }
@@ -608,8 +610,8 @@ class Mouse extends React.Component {
   this.btnRef.current
   ```
 
-### context
 
+### context
 - **旧的 context**（不要记，了解即可）
 
   使用：
@@ -625,25 +627,22 @@ class Mouse extends React.Component {
   3.shouldComponentUpdate：由于 context 的传递也是一层一层传递，因此它也会受到 shouldComponent 的阻断
 
 - **新的 context 基本使用**
+```ts
+export default const MyContext = React.createContext(defaultValue);
+// index.js
+<MyContext.Provider value={name:'zz'}>
 
-  ```
-  // context.js
-  export default const MyContext = React.createContext(defaultValue);
-
-  // index.js
-  <MyContext.Provider value={name:'zz'}>
-
-  // 子组件
+ // 子组件
   <MyContext.Consumer>
-    	{{name} => <h1>{name}</div>}
+    	{{name} =>{name}}
   </MyContext.Consumer>
-  ```
+```
 
 ### React 其他 API
 
 - **Fragment**
 
-  ```
+  ```ts
   // 当我们想渲染一组组件，如列表，但不想为其添加额外父节点，可以使用Fragment。
   // key 是唯一可以传递给 Fragment 的属性。未来可能会添加对其他属性的支持，例如事件。
   function Glossary(props) {
@@ -675,9 +674,6 @@ class Mouse extends React.Component {
 
   2.  **forwardRef 透传**
 
-  ```
-
-  ```
 
 - **lazy 和 Suspense**
 
@@ -690,7 +686,7 @@ class Mouse extends React.Component {
 
       注意:React.lazy 和 Suspense 技术还不支持服务端渲染。
 
-      ```
+      ```ts
 
       const OtherComponent = React.lazy(() => import('./OtherComponent'));
       function MyComponent() {
@@ -708,7 +704,7 @@ class Mouse extends React.Component {
 
 - **memo**
 
-  ```
+  ```ts
   const MyComponent = React.memo(function MyComponent(props) {
     /* 使用 props 渲染 */
   });
@@ -719,7 +715,7 @@ class Mouse extends React.Component {
 
   默认情况下其只会做浅层对比，如果你想要控制对比过程，那么请将自定义的比较函数通过第二个参数传入来实现。例如使用 lodash 的 isEqual 函数
 
-  ```
+  ```ts
   function MyComponent(props) {
     /* 使用 props 渲染 */
   }
@@ -735,7 +731,7 @@ class Mouse extends React.Component {
 
 - **Portal**
 
-  ```
+  ```ts
   ReactDOM.createPortal(child, container)
   // 第一个参数（child）是任何可渲染的 React 子元素，例如一个元素，字符串或 fragment。
   // 第二个参数（container）是一个 DOM 元素。
@@ -828,7 +824,7 @@ class Mouse extends React.Component {
 
       React 的核心入口文件是 packages/react/index.js:
 
-      ```
+      ```ts
       'use strict';
 
       const React = require('./src/React');
@@ -893,7 +889,7 @@ React Component 就是我们的类组件或者函数式组件, 是一个函数
 
 React Element 是类组件的 render 方法的返回值，或者函数组件的返回值，也就是我们写的 JSX，最后返回一个对象
 
-    ```javascript
+```ts
     class App extends Component {
 
 render() {
@@ -1037,7 +1033,7 @@ null,
 
 - **对象的配置方式**
 
-  ```
+  ```ts
   const routeConfig = [
     { path: '/',
       component: App,

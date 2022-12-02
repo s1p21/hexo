@@ -149,7 +149,7 @@ class myPromise {
 
   promiseRace = (promises) => {
     if (!isArray(promises)) {
-        return reject(new TypeError("必须是数组"));
+        return reject(new Error("必须是数组"));
       }
       return new myPromise((resolve,reject)=>{
         for (let i = 0; i < promises.length; index++) {
