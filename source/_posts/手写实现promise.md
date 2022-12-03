@@ -142,7 +142,7 @@ class myPromise {
               return reject(reason);
             }
           );
-        })(i);
+        })(i);    
       }
     });
   };

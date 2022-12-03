@@ -62,3 +62,15 @@ display:-webkit-box
 - 解析到link时，同步加载引到的css，而@import引到的css等到页面加载完成后才被加载
 - @import 需要ES5 以上
 - link可以js动态导入，@import不行
+
+#### 4. flex
+- flex-direction
+- justify-content
+- align-items
+- align-content (多轴线的对齐方式)
+- flex-wrap
+
+子 
+- flex： 0 1 auto
+- 表示flex-grow 为0 flex-shrink 为1 flex basis为auto
+- align-self

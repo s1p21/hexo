@@ -35,19 +35,19 @@ dva 首先是一个基于 redux 和 redux-saga 的数据流方案，然后为了
 
    当前页面的初始状态，优先级低于传给 dva() 的 opts.initialState
 
-   ```
+   ```ts
    app.model({
-       namespace: 'home',
-   	state: {
-   	  	 count: 1
-   	},
+     namespace: "home",
+     state: {
+       count: 1,
+     },
    });
    // 相当于
    const app = dva({
-      initialState: {
-     		home: {
-     			count: 1
-     		}
+     initialState: {
+       home: {
+         count: 1,
+       },
      },
    });
    ```
@@ -56,7 +56,7 @@ dva 首先是一个基于 redux 和 redux-saga 的数据流方案，然后为了
 
    以 key/value 格式定义 effect。用于处理异步操作和业务逻辑，不直接修改 state
 
-   ```
+   ```ts
    * getListData({payload}, {call, put}) {
      const listData = yield call(API.getListData, payload);
      yield put({
@@ -70,7 +70,7 @@ dva 首先是一个基于 redux 和 redux-saga 的数据流方案，然后为了
 
    以 key/value 格式定义 reducer。用于处理同步操作，唯一可以修改 state 的地方，由 action 触发
 
-   ```
+   ```ts
    setListData(state, action) {
 
      return {
@@ -133,7 +133,7 @@ app.start("#root");
 
 ### dva 图解
 
-[图解 DAV](./images/dva-pick.png)
+![图解 DAV](https://raw.githubusercontent.com/s1p21/hexo/master/source/images/dva-pic.png)
 
 ## dva 源码解读
 
@@ -189,7 +189,7 @@ dva 项目包含四个包：
 
 - **dva**
 
-  ```
+  ```ts
   export fetch from 'isomorphic-fetch';
   export dynamic from './dynamic';
   export { connect, connectAdvanced, useSelector, useDispatch, useStore, shallowEqual }; // react-redux
@@ -300,7 +300,7 @@ redux 是 flux 架构的变种之一
 
 - **单一数据源**
 
-      对比mobx，flux的多数据源，redux应用只存在唯一一个store，store中存在唯一一个state，也就是全局的状态（store中还包含substibe，dispatch等方法）
+对比 mobx，flux 的多数据源，redux 应用只存在唯一一个 store，store 中存在唯一一个 state，也就是全局的状态（store 中还包含 substibe，dispatch 等方法）
 
 - **State 是只读的**
 
@@ -332,11 +332,11 @@ redux 是 flux 架构的变种之一
 
   多数情况下，type 会被定义成字符串常量。当应用规模越来越大时，建议使用单独的模块或文件来存放 action。
 
-  ```
-  const ADD_TODO = 'ADD_TODO'
+  ```ts
+  const ADD_TODO = "ADD_TODO";
   ```
 
-  ```
+  ```ts
   {
     type: ADD_TODO,
     text: 'Build my first Redux app'
@@ -347,14 +347,13 @@ redux 是 flux 架构的变种之一
 
   action creator 函数就是生成相同 type 的 action 的方法。
 
-  ```
+  ```ts
   function addTodo(text) {
     return {
       type: ADD_TODO,
-      text
-    }
+      text,
+    };
   }
-
   ```
 
 - **dispatch**
@@ -383,10 +382,10 @@ redux 完整使用流程：
 ### redux 表示法
 
 react 表示法
-![](./images/react-pic.png)
+![](https://raw.githubusercontent.com/s1p21/hexo/master/source/images/react-pic.png)
 
 redux 表示法
-![](./images/redux-pic.png)
+![](https://raw.githubusercontent.com/s1p21/hexo/master/source/images/redux-pic.png)
 
 ### 副作用
 
@@ -449,26 +448,28 @@ react-redux 是 redux 的在 react 中使用的绑定库
 
 - **redux-thunk 源码**
 
-```
+```ts
 // 去掉extraArgument后
-const thunk = ({ dispatch, getState }) => (next) => (action) => {
-if (typeof action === 'function') {
-  return action(dispatch, getState, extraArgument);
-}
+const thunk =
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    if (typeof action === "function") {
+      return action(dispatch, getState, extraArgument);
+    }
 
-return next(action);
-};
+    return next(action);
+  };
 // 因为 applyMiddleware函数，会先将middleware依次执行并传入（{getstate,dispatch}）
 // 而后componse函数会依次为前一个middleware传入下一个middleware，最后一个middleware执行的是dispath（aciton）
 // middlewares是有先后顺序的，可以根据官方文档配置
-
 ```
 
 修改 dispatch 函数，如果是一个对象，则直接 dispatch 这个 action，如果是一个函数，则执行函数，在函数内部在触发 dispatch
 
 - **redux 的插件为什么要这样写**
 
-```
+```ts
 形如： ({ dispatch, getState }) => (next) => (action) => {}
 
 //因为在applyMiddleware中
@@ -496,183 +497,182 @@ redux-promise redux-saga 等等
 
 ### createStore
 
-    createStore 通过传入必须的reducer，可选的preloadedState，和可选的增强器，返回一个store对象
-    主要包含subscribe（订阅监听函数到内部listener数组），dispatch（内部的reducer接受state和action，返回新的state，同时触发所有的监听函数），和getState（获取当前的state）
+createStore 通过传入必须的 reducer，可选的 preloadedState，和可选的增强器，返回一个 store 对象
+主要包含 subscribe（订阅监听函数到内部 listener 数组），dispatch（内部的 reducer 接受 state 和 action，返回新的 state，同时触发所有的监听函数），和 getState（获取当前的 state）
 
-    ```
-    // 去掉了类型和参数校验的createStore
-    export default function createStore(reducer, preloadedState, enhancer) {
-    	// 如果第二个参数没有传入初始的state，而是传入了enhancer(applyMiddleware函数调用的返回值，也是一个函数), 那就将第二个参数作为enhancer
-    	if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
-    		enhancer = preloadedState
-    		preloadedState = undefined
-    	}
-    	if (typeof enhancer !== 'undefined') {
-    		// enhancer为增强器，主要为增强dispatch函数，理解要看 applyMiddleware
-    		return enhancer(createStore)(reducer, preloadedState)
-    	}
-    	let currentReducer = reducer // 当前reducer
-    	let currentState = preloadedState // 当前state
-    	let currentListeners = [] // 当前listeners
-    	let nextListeners = currentListeners // 下一个listens
-    	let isDispatching = false // 是否dispatch状态中
-    	// 获取当前state
-    	function getState() {
-    		return currentState
-    	}
-    	// 将监听函数push到listeners数组，返回一个卸载监听函数的方法
-    	function subscribe(listener) {
-    		// ...
-    		let isSubscribed = true
-    		nextListeners.push(listener)
-    		return function unsubscribe() {
-    			if (!isSubscribed) {
-    				return
-    			}
-    			isSubscribed = false
-    			const index = nextListeners.indexOf(listener)
-    			nextListeners.splice(index, 1)
-    			currentListeners = null
-    		}
-    	}
-        // 最终我们在我们的组件里会调用的dispatch方法，如果有异步事件会被加强，最后还是会走此事件
-    	function dispatch(action) {
-    		try {
-    			isDispatching = true
-    			// reducer接受当前的state和action，返回当前新的state
-    			currentState = currentReducer(currentState, action)
-    		} finally {
-    			isDispatching = false
-    		}
-    		// 遍历所有的listeners，然后执行
-    		const listeners = (currentListeners = nextListeners)
-    		for (let i = 0; i < listeners.length; i++) {
-    			const listener = listeners[i]
-    			listener()
-    		}
-    		return action
-    	}
-    	// 当store被创建的时候，dispatch一个INIT的action，所有的reducer返回他们初始的state，构成初始的state树
-    	dispatch({ type: ActionTypes.INIT })
-    	return {
-    		dispatch,
-    		subscribe,
-    		getState,
-    	}
+```ts
+// 去掉了类型和参数校验的createStore
+export default function createStore(reducer, preloadedState, enhancer) {
+  // 如果第二个参数没有传入初始的state，而是传入了enhancer(applyMiddleware函数调用的返回值，也是一个函数), 那就将第二个参数作为enhancer
+  if (typeof preloadedState === "function" && typeof enhancer === "undefined") {
+    enhancer = preloadedState;
+    preloadedState = undefined;
+  }
+  if (typeof enhancer !== "undefined") {
+    // enhancer为增强器，主要为增强dispatch函数，理解要看 applyMiddleware
+    return enhancer(createStore)(reducer, preloadedState);
+  }
+  let currentReducer = reducer; // 当前reducer
+  let currentState = preloadedState; // 当前state
+  let currentListeners = []; // 当前listeners
+  let nextListeners = currentListeners; // 下一个listens
+  let isDispatching = false; // 是否dispatch状态中
+  // 获取当前state
+  function getState() {
+    return currentState;
+  }
+  // 将监听函数push到listeners数组，返回一个卸载监听函数的方法
+  function subscribe(listener) {
+    // ...
+    let isSubscribed = true;
+    nextListeners.push(listener);
+    return function unsubscribe() {
+      if (!isSubscribed) {
+        return;
+      }
+      isSubscribed = false;
+      const index = nextListeners.indexOf(listener);
+      nextListeners.splice(index, 1);
+      currentListeners = null;
+    };
+  }
+  // 最终我们在我们的组件里会调用的dispatch方法，如果有异步事件会被加强，最后还是会走此事件
+  function dispatch(action) {
+    try {
+      isDispatching = true;
+      // reducer接受当前的state和action，返回当前新的state
+      currentState = currentReducer(currentState, action);
+    } finally {
+      isDispatching = false;
     }
-    ```
+    // 遍历所有的listeners，然后执行
+    const listeners = (currentListeners = nextListeners);
+    for (let i = 0; i < listeners.length; i++) {
+      const listener = listeners[i];
+      listener();
+    }
+    return action;
+  }
+  // 当store被创建的时候，dispatch一个INIT的action，所有的reducer返回他们初始的state，构成初始的state树
+  dispatch({ type: ActionTypes.INIT });
+  return {
+    dispatch,
+    subscribe,
+    getState,
+  };
+}
+```
 
 ### combineReducers
 
-    这个函数是用来整合多个reducers的, 因为createStore只接受一个reducer，这个整合的过程就是将所有的reducer存在一个对象里。当dispatch一个action的时候，通过遍历每一个reducer, 来计算出每个reducer的state, 其中用到的优化就是每遍历一个reducer就会判断新旧的state是否发生了变化, 最后决定是返回旧state还是新state
+这个函数是用来整合多个 reducers 的, 因为 createStore 只接受一个 reducer，这个整合的过程就是将所有的 reducer 存在一个对象里。当 dispatch 一个 action 的时候，通过遍历每一个 reducer, 来计算出每个 reducer 的 state, 其中用到的优化就是每遍历一个 reducer 就会判断新旧的 state 是否发生了变化, 最后决定是返回旧 state 还是新 state
 
-    ```
-    // 这里的reducers是{key: reducer,key:reducer}的对象
-    export default function combineReducers(reducers) {
-    	const reducerKeys = Object.keys(reducers)
-    	// 最终的reducers对象，只是对传入的reducers不合法的进行过滤
-    	const finalReducers = {}
-    	for (let i = 0; i < reducerKeys.length; i++) {
-    		const key = reducerKeys[i]
-    		if (typeof reducers[key] === 'function') {
-    			finalReducers[key] = reducers[key]
-    		}
-    	}
-    	const finalReducerKeys = Object.keys(finalReducers)
-    	// 返回最终的reducer
-    	return function combination(state = {}, action) {
-
-    		let hasChanged = false
-    		const nextState = {}
-
-    		// 每当dispatch一个action，遍历所有的reducer，生成一个{key:state,key:state}的全局state
-    		for (let i = 0; i < finalReducerKeys.length; i++) {
-    			const key = finalReducerKeys[i]
-    			const reducer = finalReducers[key]
-    			const previousStateForKey = state[key]
-    			const nextStateForKey = reducer(previousStateForKey, action)
-    			nextState[key] = nextStateForKey
-    			hasChanged = hasChanged || nextStateForKey !== previousStateForKey
-    		}
-    		// 判断是否有state发生改变，发生改变则返回新的state
-    		hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length
-    		return hasChanged ? nextState : state
-    	}
+```ts
+// 这里的reducers是{key: reducer,key:reducer}的对象
+export default function combineReducers(reducers) {
+  const reducerKeys = Object.keys(reducers);
+  // 最终的reducers对象，只是对传入的reducers不合法的进行过滤
+  const finalReducers = {};
+  for (let i = 0; i < reducerKeys.length; i++) {
+    const key = reducerKeys[i];
+    if (typeof reducers[key] === "function") {
+      finalReducers[key] = reducers[key];
     }
-    ```
+  }
+  const finalReducerKeys = Object.keys(finalReducers);
+  // 返回最终的reducer
+  return function combination(state = {}, action) {
+    let hasChanged = false;
+    const nextState = {};
+
+    // 每当dispatch一个action，遍历所有的reducer，生成一个{key:state,key:state}的全局state
+    for (let i = 0; i < finalReducerKeys.length; i++) {
+      const key = finalReducerKeys[i];
+      const reducer = finalReducers[key];
+      const previousStateForKey = state[key];
+      const nextStateForKey = reducer(previousStateForKey, action);
+      nextState[key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
+    // 判断是否有state发生改变，发生改变则返回新的state
+    hasChanged =
+      hasChanged || finalReducerKeys.length !== Object.keys(state).length;
+    return hasChanged ? nextState : state;
+  };
+}
+```
 
 ### applyMiddleware
 
-    applyMiddleware返回一个enhancer，enhancer接收一个creatStore，会在内部创建一个store，然后对该store的dispatch函数进行改造
+applyMiddleware 返回一个 enhancer，enhancer 接收一个 creatStore，会在内部创建一个 store，然后对该 store 的 dispatch 函数进行改造
 
-    改造的具体方式是通过compose来构造一个dispatch链，链的具体形式就是**[中间件1，中间件2, ......, 中间件N, store.dispatch]**
+改造的具体方式是通过 compose 来构造一个 dispatch 链，链的具体形式就是**[中间件 1，中间件 2, ......, 中间件 N, store.dispatch]**
 
-    然后将增强的dispatch作为store新的dispatch暴露给用户
+然后将增强的 dispatch 作为 store 新的 dispatch 暴露给用户
 
-    那用户每次dispatch的时候，就会依次执行每个中间件，执行完当前的，会将执行权交给下一个，直到reducer中，计算出新的state
+那用户每次 dispatch 的时候，就会依次执行每个中间件，执行完当前的，会将执行权交给下一个，直到 reducer 中，计算出新的 state
 
-    ```
-    export default function applyMiddleware(...middlewares) {
-    	return createStore => (...args) => {
-    		const store = createStore(...args)
-    		let dispatch = () => {
-    			throw new Error(
-    				'Dispatching while constructing your middleware is not allowed. ' +
-    				'Other middleware would not be applied to this dispatch.'
-    			)
-    		}
+```ts
+export default function applyMiddleware(...middlewares) {
+  return (createStore) =>
+    (...args) => {
+      const store = createStore(...args);
+      let dispatch = () => {
+        throw new Error(
+          "Dispatching while constructing your middleware is not allowed. " +
+            "Other middleware would not be applied to this dispatch."
+        );
+      };
 
-    		const middlewareAPI = {
-    			getState: store.getState,
-    			dispatch: (...args) => dispatch(...args)
-    		}
+      const middlewareAPI = {
+        getState: store.getState,
+        dispatch: (...args) => dispatch(...args),
+      };
 
-    		const chain = middlewares.map(middleware => middleware(middlewareAPI))
-    		dispatch = compose(...chain)(store.dispatch)
+      const chain = middlewares.map((middleware) => middleware(middlewareAPI));
+      dispatch = compose(...chain)(store.dispatch);
 
-    		return {
-    			...store,
-    			dispatch
-    		}
-    	}
-    }
-    ```
+      return {
+        ...store,
+        dispatch,
+      };
+    };
+}
+```
 
 ### bindActionCreator(s)
 
-    只是把我们平常的写法换了一个形式，更符合函数式思想？
+只是把我们平常的写法换了一个形式，更符合函数式思想？
 
-    ```
-    function bindActionCreator(actionCreator, dispatch) {
-
-return function() {
-return dispatch(actionCreator.apply(this, arguments))
-}
-}
-// 平时的写法
-dispatch => ({
-getList: (...args) => dispatch(actionCreator(...args)),
-});
-// 使用 bindActionCreator 后的写法
-dispatch => ({
-getList: bindActionCreators(actionCreator, dispatch),
-});
-
-````
+```ts
+  function bindActionCreator(actionCreator, dispatch) {
+    return function () {
+      return dispatch(actionCreator.apply(this, arguments));
+    };
+  }
+  // 平时的写法
+  (dispatch) => ({
+    getList: (...args) => dispatch(actionCreator(...args)),
+  });
+  // 使用 bindActionCreator 后的写法
+  (dispatch) => ({
+    getList: bindActionCreators(actionCreator, dispatch),
+  });
+```
 
 ### compose
 
-    插件机制的核心代码
-    中间件组成的一个数组，最终在前一个中间件中执行下一个中间件，最后依次返回上一个中间件的函数上下文中
-    最后形成一个先入后出的洋葱模型
+插件机制的核心代码
+中间件组成的一个数组，最终在前一个中间件中执行下一个中间件，最后依次返回上一个中间件的函数上下文中
+最后形成一个先入后出的洋葱模型
 
-    ```
-    // 供applyMiddleware使用
-    export default function compose(...funcs) {
-        // ...
-        return funcs.reduce((a, b) => (...args) => a(b(...args)))
-    }
-    ```
+```ts
+// 供applyMiddleware使用
+export default function compose(...funcs) {
+    // ...
+    return funcs.reduce((a, b) => (...args) => a(b(...args)))
+}
+```
 
 ### redux 源码总结
 
@@ -692,28 +692,28 @@ getList: bindActionCreators(actionCreator, dispatch),
 
 8. bindActionCreators 是一个单独的方法
 
-
 ## umi
 
 ### 介绍
 
-umi是一个可插拔的企业级 react 应用框架。umi 以路由为基础的，支持路由级的按需加载。然后配以完善的插件体系，覆盖从源码到构建产物的每个生命周期，支持各种功能扩展和业务需求
+umi 是一个可插拔的企业级 react 应用框架。umi 以路由为基础的，支持路由级的按需加载。然后配以完善的插件体系，覆盖从源码到构建产物的每个生命周期，支持各种功能扩展和业务需求
 
 roadhog 是另一个构建工具，是基于 webpack 的封装工具，目的是简化 webpack 的配置
 
 umi 可以简单地理解为 roadhog + 路由，辅以一套插件机制，目的是通过框架的方式简化 React 开发
 
-umi 强烈推荐使用dva 的数据流方案，也就是只使用dva的核心功能
+umi 强烈推荐使用 dva 的数据流方案，也就是只使用 dva 的核心功能
 
-### umi架构
+### umi 架构
 
 ![](images/umi.png)
 
-### umi能帮我做什么
+### umi 能帮我做什么
 
-1. 使用create-umi的脚手架，搭建基础的项目架构
-2. 根据其目录约定，可以自动帮我们生成dva的models和路由
+1. 使用 create-umi 的脚手架，搭建基础的项目架构
+2. 根据其目录约定，可以自动帮我们生成 dva 的 models 和路由
 3. 全局布局可以通过路由配置的方式帮我们添加
-4. 提供默认的配置，简化webpack的配置
+4. 提供默认的配置，简化 webpack 的配置
 5. 引入一个插件级
-````
+
+

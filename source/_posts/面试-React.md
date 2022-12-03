@@ -35,13 +35,9 @@ commit:
 
 如需要，则操作 dom 节点更新；
 
-
-
 要了解 Fiber，我们首先来看为什么需要它？
 
-
 问题: 随着应用变得越来越庞大，整个更新渲染的过程开始变得吃力，大量的组件渲染会导致主进程长时间被占用，导致一些动画或高频操作出现卡顿和掉帧的情况。而关键点，便是 同步阻塞。在之前的调度算法中，React 需要实例化每个类组件，生成一颗组件树，使用 同步递归 的方式进行遍历渲染，而这个过程最大的问题就是无法 暂停和恢复。
-
 
 解决方案: 解决同步阻塞的方法，通常有两种: 异步 与 任务分割。而 React Fiber 便是为了实现任务分割而诞生的。
 
@@ -131,8 +127,97 @@ reducer 处理state
 
 
 #### 函数式编程
-纯函数
+纯函数 
 函数复合
 数据不可变性
 函数式编程其实是一种编程思想，它追求更细的粒度，将应用拆分成一组组极小的单元函数，组合调用操作数据流；
 它提倡着 纯函数 / 函数复合 / 数据不可变， 谨慎对待函数内的 状态共享 / 依赖外部 / 副作用；
+
+
+#### 高阶组件
+react 中的 HOC 高阶组件，就是一个函数，接受一个组件作为参数，返回一个新的组件
+例如一个loading的高阶组件
+
+```ts
+// high order component
+import React from 'react'
+import axios from 'axios'
+
+interface ILoaderState {
+  data: any,
+  isLoading: boolean
+}
+interface ILoaderProps {
+  data: any,
+}
+const withLoader = <P extends ILoaderState>(WrappedComponent: React.ComponentType<P>, url: string) => {
+  return class LoaderComponent extends React.Component<Partial<ILoaderProps>, ILoaderState> {
+    constructor(props: any) {
+      super(props)
+      this.state = {
+        data: null,
+        isLoading: false
+      }
+    }
+    componentDidMount() {
+      this.setState({
+        isLoading: true,
+      })
+      axios.get(url).then(result => {
+        this.setState({
+          data: result.data,
+          isLoading: false
+        })
+      })
+    }
+    render() {
+      const { data, isLoading } = this.state
+      return (
+        <>
+          { (isLoading || !data) ? <p>data is loading</p> :
+            <WrappedComponent {...this.props as P} data={data} />
+          }
+        </>
+      )
+    }
+  }
+}
+
+export default withLoader
+
+```
+使用实例：
+
+```ts
+interface IShowResult{
+    message:string,
+    status:string
+}
+//定义一个组件
+const DogShow:React.FC<{data:IShowResult}> = ({data})=>{
+    return (
+        <>
+            <h2>show:{data.status}</h2>
+            <img src={data.message}/>
+        </>
+    )
+}
+
+const App:React.FC=()=>{
+    //高阶组件，将一个组件用参数形式传入，然后经过包裹后返回一个新的组件，达到公用包裹组件的功能
+    const WrappedDogShow = withLoader(DogShow,'https://dog.ceo/api/breeds/image/random');
+    return (
+        <WrappedDogShow/>
+    )
+}
+```
+
+#### umi & dva
+umi 企业级的前端开发框架，Umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。然后配以生命周期完善的插件体系，覆盖从源码到构建产物的每个生命周期，支持各种功能扩展和业务需求。
+
+特性：插件化、MFSU
+
+dva 是基于redux的前端数据流方案
+特性：
+- 易学易用
+-

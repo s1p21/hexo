@@ -4,23 +4,26 @@ date: 2022-11-29 17:13:37
 tags: [面试, JS]
 ---
 
-#### 1. 说下 js的内存泄漏，什么情况容易出现内存泄漏？怎么解决？垃圾回收机制是怎么样的？
-答:js的内存泄漏可以通过三个:闭包、全局变量、对象属性循环使用、DOM节点删除时未解绑事件、计时器引用未及时删除
+#### 1. 说下 js 的内存泄漏，什么情况容易出现内存泄漏？怎么解决？垃圾回收机制是怎么样的？
+
+答:js 的内存泄漏可以通过三个:闭包、全局变量、对象属性循环使用、DOM 节点删除时未解绑事件、计时器引用未及时删除
 
 垃圾回收机制:手动回收和自动回收、自动回收分为对调用栈的数据回收、对调用堆的数据回收、
-调用栈的数据回收基于ESP（记录当前执行状态的指针）来销毁保存在栈的执行上下文；
-调用堆的数据回收:v8把堆分为`新生代`和`老生代`,新生代存放的是生存时间短的对象，老生代存放生存时间长的对象
+调用栈的数据回收基于 ESP（记录当前执行状态的指针）来销毁保存在栈的执行上下文；
+调用堆的数据回收:v8 把堆分为`新生代`和`老生代`,新生代存放的是生存时间短的对象，老生代存放生存时间长的对象
 执行流程:
- 1. 标记活动对象和非活动对象
- 2. 回收非活动对象占据的内存
- 3. 内存整理。整理内存碎片
+
+1.  标记活动对象和非活动对象
+2.  回收非活动对象占据的内存
+3.  内存整理。整理内存碎片
 
 新生代的垃圾回收，将新生代空间内存分为两个区域，一半是对象区域，一半是空闲区域，当对象区域写满后，需要执行一次垃圾清理操作。在垃圾回收过程中，对使用对象进行标记。在垃圾清理阶段，把存活的对象复制到空闲区域，并有序排列这些对象。同时经过两次垃圾回收依然还存活的对象，将放置在老生区中
 
 老生代的垃圾回收，使用标记清除。通过遍历调用栈，能够到达的元素称为活动对象，没有对象的可以判断为垃圾数据，进行标记。之后进行垃圾清除，这个是直接删除标记数据。清除之后，产生大量不连续的内存碎片，于是产生了标记-整理的过程。对所有的可以活动的对象向一端移动，清理边界以外的内存，从而占据连续的内存块。
 
 #### 2. 模块化
-浏览器中ES6的模块化支持、node采用commonJS的模块化支持
+
+浏览器中 ES6 的模块化支持、node 采用 commonJS 的模块化支持
 分类
 
 - es6 `import/export`
@@ -35,15 +38,15 @@ tags: [面试, JS]
 
 原型关系：
 
-- 每个 class都有显示原型 prototype
+- 每个 class 都有显示原型 prototype
 - 每个实例都有隐式原型 _ proto_
-- 实例的_ proto_指向对应 class 的 prototype
+- 实例的* proto*指向对应 class 的 prototype
 
-原型:  在 JS 中，每当定义一个对象（函数也是对象）时，对象中都会包含一些预定义的属性。其中每个函数对象都有一个prototype 属性，这个属性指向函数的原型对象。
+原型: 在 JS 中，每当定义一个对象（函数也是对象）时，对象中都会包含一些预定义的属性。其中每个函数对象都有一个 prototype 属性，这个属性指向函数的原型对象。
 
-原型链：函数的原型链对象constructor默认指向函数本身，原型对象除了有原型属性外，为了实现继承，还有一个原型链指针__proto__,该指针是指向上一层的原型对象，而上一层的原型对象的结构依然类似。因此可以利用__proto__一直指向Object的原型对象上，而Object原型对象用Object.prototype.__ proto__ = null表示原型链顶端。如此形成了js的原型链继承。同时所有的js对象都有Object的基本防范
+原型链：函数的原型链对象 constructor 默认指向函数本身，原型对象除了有原型属性外，为了实现继承，还有一个原型链指针**proto**,该指针是指向上一层的原型对象，而上一层的原型对象的结构依然类似。因此可以利用**proto**一直指向 Object 的原型对象上，而 Object 原型对象用 Object.prototype.** proto** = null 表示原型链顶端。如此形成了 js 的原型链继承。同时所有的 js 对象都有 Object 的基本防范
 
-特点:  JavaScript对象是通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变。
+特点: JavaScript 对象是通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变。
 
 #### 4.介绍节流防抖原理、区别以及应用
 
@@ -57,30 +60,27 @@ tags: [面试, JS]
 
 ```js
 // 节流
-function throttle(fn,delay) {
-    let lastTime = 0
-    return function() {
-        var nowTime = Data.now()
-        if (nowTime-lastTime>delay) {
-            fn.call(this)
-            lastTime = nowTime
-        }
+function throttle(fn, delay) {
+  let lastTime = 0;
+  return function () {
+    var nowTime = Data.now();
+    if (nowTime - lastTime > delay) {
+      fn.call(this);
+      lastTime = nowTime;
     }
-
+  };
 }
 
 //  防抖
-function debounce(fn,delay) {
-    var timer = null
-    return function() {
-        clearTimeOut(timer)
-        timer = setTimeOut(function(){
-            fn.apply(this)
-        },delay)
-    }
-
+function debounce(fn, delay) {
+  var timer = null;
+  return function () {
+    clearTimeOut(timer);
+    timer = setTimeOut(function () {
+      fn.apply(this);
+    }, delay);
+  };
 }
-
 ```
 
 #### 5. 函数式编程
@@ -88,24 +88,105 @@ function debounce(fn,delay) {
 - 纯函数(确定性函数): 是函数式编程的基础，可以使程序变得灵活，高度可拓展，可维护；
 
 优势:
+
 - 完全独立，与外部解耦；
 - 高度可复用，在任意上下文，任意时间线上，都可执行并且保证结果稳定；
 - 可测试性极强；
 
 条件:
+
 - 不修改参数；
 - 不依赖、不修改任何函数外部的数据；
-- 完全可控，参数一样，返回值一定一样: 例如函数不能包含new Date()或者Math.rando()等这种不可控因素；
+- 完全可控，参数一样，返回值一定一样: 例如函数不能包含 new Date()或者 Math.rando()等这种不可控因素；
 - 引用透明；
 
-
 #### 6. call、 apply 和 bind 的区别
+
 call( this,a,b,c ) 在第一个参数之后的，后续所有参数就是传入该函数的值。apply( this,[a,b,c] ) 只有两个参数，第一个是对象，第二个是数组，这个数组就是该函数的参数。
 
 bind 除了返回是函数以外，它的参数和 call 一样。
 
-共同之处：都可以用来代替另一个对象调用一个方法，将一个函数的对象上下文从初始的上下文改变为由thisObj指定的新对象
+共同之处：都可以用来代替另一个对象调用一个方法，将一个函数的对象上下文从初始的上下文改变为由 thisObj 指定的新对象
+
+```js 
+// 实现bind
+Function.prototype.mybind(context,...args) {
+    let fun  = this
+    function bound(...args2) {
+        let self = this instanceof bound?this:context
+        return fun.apply(self,args.contact(args2);
+
+    }
+    bound.prototype = Object.create(fun.prototype)
+    return bound
+}
+
+// 实现call
+Function.prototype.mycall(context,...args) {
+    context.fun = this
+    return context.fun(...args)
+}
+// 实现apply
+Function.prototype.myapply = function(context, args) {
+    context.fun = this;
+    return context.fun(...args);
+};
+```
+
+#### reduce 参数
+
+arr.reduce(callback,[initialValue])
+
+callback （执行数组中每个值的函数，包含四个参数）
+
+    1、previousValue （上一次调用回调返回的值，或者是提供的初始值（initialValue））
+    2、currentValue （数组中当前被处理的元素）
+    3、index （当前元素在数组中的索引）
+    4、array （调用 reduce 的数组）
+
+initialValue （作为第一次调用 callback 的第一个参数。）
+
+#### 深拷贝
+
+```js
+function deepClone=function() {
+    const map = new Map()
+    function isObject(data) {
+        return typeOf data ===''object && data !==null
+    }
+    function clone (target) {
+        if (isObject(target)) {
+            let cloneTarget = Array.isArray(target)?[]:{}
+            if (map.get(target)) return map.get(target)
+            map.set(target, cloneTarget)
+            for (let key in target) {
+                cloneTarget[key]=clone(target[key])
+            }
+            return cloneTarget
+        } else {
+            return target
+        }
+    }
+
+    return clone(target)
+}
+```
 
 
+#### new 关键字做了什么
 
+做了四件事，1，创建空对象，2，将空对象的`__proto__`指向构造函数的`prototype`3，构造函数的this作用域赋给新对象，4，返回原始值需要忽略，返回对象需要正常处理
+```js
+function _new(constructor, ...arg) {
+// 创建一个空对象
+  var obj = {};
+  // 空对象的`__proto__`指向构造函数的`prototype`, 为这个新对象添加属性 
+  obj.__proto__ = constructor.prototype; 
+  // 构造函数的作用域赋给新对象
+  var res = constructor.apply(obj, arg); 
+  // 返回新对象.如果没有显式return语句，则返回this
+  return Object.prototype.toString.call(res) === '[object Object]' ? res : obj; 
+}
+```
 
+#### 手动实现一个instanceOf

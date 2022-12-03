@@ -6,13 +6,29 @@ tags: [面试,vue]
 
 #### vue 的双向绑定
 vue2.x 中通过发布者-订阅者设计模式的方式实现，通过get和set方法，通过Object.defineProperty() 实现数据劫持
-view更新data其实可以通过事件监听
+有三个参数，对象，对象的属性，以及描述符对象
+描述符对象： 数据属性：
+- writable 可读写
+- enumerable 可迭代，表示是否可用for in循环
+- configurable 是否可删除
+- value 值
 
-流程：1实现一个监听器Observer；2: 发布一个订阅者Watcher，3、实现一个解析器
+访问器属性
+- get
+- set
 
-缺点：对于新增的属性无法监听，需要通过 vm.$set方法新增属性，对于数组通过push方法给数组增加的元素也是监听不到
+同时需要便利所有属性进行双向绑定
+```
+
+```
+
+缺点：对于新增的属性无法监听，需要通过 vm.$set方法新增属性；
 
 vue3 中通过proxy的api 来实现监听
+proxy有两个参数
+target:要使用 Proxy 包装的目标对象（可以是任何类型的对象，包括原生数组，函数，甚至另一个代理）
+handler:一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
+
 
 #### vue的生命周期
 vue2.x
@@ -65,4 +81,32 @@ pinia
 2. Vue在更新DOM时是异步执行的。只要侦听到数据变化，Vue将开启1个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个watcher被多次触发，只会被推入到队列中-次。这种在缓冲时去除重复数据对于避免不必要的计算和DOM操作是非常重要的。nextTick方法会在队列中加入一个回调函数，确保该函数在前面的dom操作完成后才调用；
 3. 比如，我在干什么的时候就会使用nextTick，传一个回调函数进去，在里面执行dom操作即可；
 4. 我也有简单了解nextTick实现，它会在callbacks里面加入我们传入的函数，然后用timerFunc异步方式调用它们，首选的异步方式会是Promise。这让我明白了为什么可以在nextTick中看到dom操作结果。
+
+#### vue的slot及组件设计
+
+
+#### Object.defineProperty() 的参数
+
+
+#### v-model语法糖和 vue3的v-model变化
+value+input 是v-band和v-on的简洁写法
+在vue2中 v-model 只能绑定在组件的 value 属性上
+在2.x 版本中 可以在组件内部定义一个model项，其中prop用来设置v-model中默认的value的别名， event用来设置v-model中默认的input事件的别名
+一个组件上只能一个v-model
+
+在vue3中v-bind的.sync修饰符和组件的model选项被删除了
+支持同一组件同时设置多个 v-model
+也可以自定义修饰符
+v-model绑定的不再是value，而是modelValue，接收的方法也不再是input，而是update:modelValue
+
+
+#### vue 的通信方式
+- 父子：props和$emit
+- 爷孙：$attrs和$listeners
+- eventbus
+- provide 和enject
+- $parent 和$children
+- vuex
+- 自定义store
+
 
