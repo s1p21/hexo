@@ -17,10 +17,8 @@ vue2.x 中通过发布者-订阅者设计模式的方式实现，通过get和set
 - get
 - set
 
-同时需要便利所有属性进行双向绑定
-```
+同时需要遍历所有属性进行双向绑定
 
-```
 
 缺点：对于新增的属性无法监听，需要通过 vm.$set方法新增属性；
 
@@ -82,10 +80,8 @@ pinia
 3. 比如，我在干什么的时候就会使用nextTick，传一个回调函数进去，在里面执行dom操作即可；
 4. 我也有简单了解nextTick实现，它会在callbacks里面加入我们传入的函数，然后用timerFunc异步方式调用它们，首选的异步方式会是Promise。这让我明白了为什么可以在nextTick中看到dom操作结果。
 
-#### vue的slot及组件设计
 
 
-#### Object.defineProperty() 的参数
 
 
 #### v-model语法糖和 vue3的v-model变化
@@ -104,9 +100,10 @@ v-model绑定的不再是value，而是modelValue，接收的方法也不再是i
 - 父子：props和$emit
 - 爷孙：$attrs和$listeners
 - eventbus
-- provide 和enject
+- provide和 inject
 - $parent 和$children
 - vuex
 - 自定义store
 
 
+#### 子组件调用父组件的方法

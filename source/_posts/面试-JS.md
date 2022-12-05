@@ -108,7 +108,7 @@ bind 除了返回是函数以外，它的参数和 call 一样。
 
 共同之处：都可以用来代替另一个对象调用一个方法，将一个函数的对象上下文从初始的上下文改变为由 thisObj 指定的新对象
 
-```js 
+```js
 // 实现bind
 Function.prototype.mybind(context,...args) {
     let fun  = this
@@ -139,10 +139,10 @@ arr.reduce(callback,[initialValue])
 
 callback （执行数组中每个值的函数，包含四个参数）
 
-    1、previousValue （上一次调用回调返回的值，或者是提供的初始值（initialValue））
-    2、currentValue （数组中当前被处理的元素）
-    3、index （当前元素在数组中的索引）
-    4、array （调用 reduce 的数组）
+1、previousValue （上一次调用回调返回的值，或者是提供的初始值（initialValue））
+2、currentValue （数组中当前被处理的元素）
+3、index （当前元素在数组中的索引）
+4、array （调用 reduce 的数组）
 
 initialValue （作为第一次调用 callback 的第一个参数。）
 
@@ -152,7 +152,7 @@ initialValue （作为第一次调用 callback 的第一个参数。）
 function deepClone=function() {
     const map = new Map()
     function isObject(data) {
-        return typeOf data ===''object && data !==null
+        return typeOf data ==='object' && data !==null
     }
     function clone (target) {
         if (isObject(target)) {
@@ -172,21 +172,201 @@ function deepClone=function() {
 }
 ```
 
-
 #### new 关键字做了什么
 
-做了四件事，1，创建空对象，2，将空对象的`__proto__`指向构造函数的`prototype`3，构造函数的this作用域赋给新对象，4，返回原始值需要忽略，返回对象需要正常处理
+做了四件事，1，创建空对象，2，将空对象的`__proto__`指向构造函数的`prototype`3，构造函数的 this 作用域赋给新对象，4，返回原始值需要忽略，返回对象需要正常处理
+
 ```js
 function _new(constructor, ...arg) {
-// 创建一个空对象
+  // 创建一个空对象
   var obj = {};
-  // 空对象的`__proto__`指向构造函数的`prototype`, 为这个新对象添加属性 
-  obj.__proto__ = constructor.prototype; 
+  // 空对象的`__proto__`指向构造函数的`prototype`, 为这个新对象添加属性
+  obj.__proto__ = constructor.prototype;
   // 构造函数的作用域赋给新对象
-  var res = constructor.apply(obj, arg); 
+  var res = constructor.apply(obj, arg);
   // 返回新对象.如果没有显式return语句，则返回this
-  return Object.prototype.toString.call(res) === '[object Object]' ? res : obj; 
+  return Object.prototype.toString.call(res) === "[object Object]" ? res : obj;
 }
 ```
 
-#### 手动实现一个instanceOf
+#### 手动实现一个 instanceOf
+
+instanceOf 基于原型链
+
+```ts
+function isInstanceOf(child, fun) {
+  if (typeof fun !== "function") {
+    throw new TypeError("arg2 fun is not a function");
+  }
+  if (child === null) {
+    return false;
+  }
+  if (child.__proto__ !== fun.prototype) {
+    return isInstanceOf(child.__proto__, fun);
+  }
+  return true;
+}
+```
+
+#### 观察者模式和发布订阅模式
+
+观察者模式是一对多的依赖关系，他表示多个观察者对象同时监听某一个主题对象，当这个主题对象发生变化时，会通知所有观察者，使他们能够自我更新
+发布-订阅者模式引入了第三方组件，叫做信息中介，它将订阅者和发布者联系起来，当发布者发生变化时，由信息中介通知订阅者，并进行更新。
+
+- 观察者模式
+
+```js
+// 被观察者
+class Subject() {
+    constructor() {
+        this.subs=[]
+    }
+    add(observer) {
+        this.subs.push(observer)
+    }
+    notiify(...args) {
+        this.subs.forEach(ob=>ob.update(...args))
+    }
+}
+// 观察者
+class Observer() {
+    update(...args) {
+        ...
+    }
+}
+```
+
+- 发布-订阅模式
+
+```js
+class PubSub() {
+    constructor() {
+        this.handles=[]
+    }
+
+    subscribe(type,fn) {
+        if (!this.handles[type]) {
+            this.handles[type]=[]
+        } else {
+        this.handles.push(fn)
+        }
+    }
+
+    publish(type,...args) {
+        if (!this.handles[type]) return
+        this.handles[type].forEach(fn=>fn(...args))
+    }
+}
+```
+
+#### 虚拟 DOM 和真实 DOM 的转换
+
+```js
+class VDom {
+  constructor(tag, data, value, type) {
+    this.tag = tag && tag.toLowerCase(); // 节点名
+    this.data = data; // 属性
+    this.value = value; // 文本数据
+    this.type = type; // 节点类型
+    this.children = [];
+  }
+  appendChild(vnode) {
+    this.children.push(vnode);
+  }
+
+  // nodeName：node的名字，如果是element那名字是大写的,其他的名字前面写上#。
+
+  // nodeType：node的类型，一般用数字表示，1表示element(也可以用Node.ELEMENT_NODE来表示)，3表示text(Node.TEXT_NODE)。
+  // 如果是element，那么nodeName === tagName
+  // 如果是text，那么nodeName = #text， tagName = undefined
+
+  // nodeValue：当前节点的值，对于text, comment节点来说, nodeValue返回该节点的文本内容，对于 attribute 节点来说, 返回该属性的属性值，而对于document和element节点来说，返回null
+}
+
+function getVnode(node) {
+  let nodeType = node.nodeType;
+  let _vnode = null;
+  if (nodeType === "element") {
+    let tag = node.nodeName;
+    let attrs = node.attributes;
+    let _attrObj = {};
+    for (let i = 0; i < attrs.length; i++) {
+      _attrObj[attrs[i].nodeName] = attrs[i].nodeValue;
+    }
+    _vnode = new VDom(tag, _attrObj, undefined, nodeType);
+    let children = node.childNodes;
+    for (let i = 0; i < children.length; i++) {
+      _vnode.appendChild(getVNode(children[i]));
+    }
+  } else if (nodeType === "text") {
+    _vnode = new VDom(node, nodeName, undefined, node.nodeValue, nodeType);
+  }
+  return _vnode;
+}
+```
+
+虚拟 DOM 转化成 DOM
+
+```js
+function parseVNode(vnode) {
+  let type = vnode.type;
+  let rdom = null;
+  if (type === "element") {
+    rdom = document.createElement(vnode.tag);
+    let attrs = vnode.data;
+    for (let key in attrs) {
+      rdom.setArribute(key, attrs[key]);
+    }
+    let children = vnode.children;
+    for (let i = 0; i < children.length; i++) {
+      rdom.appendChild(parseNode(children[i]));
+    }
+  } else if (type === "text") {
+    rdom = document.createTextNode(vnode.value);
+  }
+  return rdom;
+}
+```
+
+#### 广度优先和深度优先
+
+深度优先采用堆栈的形式，即先进后出
+广度优先采用队列的形式，先进先出
+
+```js
+const data = [
+    {   name: 'a2',
+        children: [
+            { name: 'b2', children: [{ name: 'e2' }] },
+            { name: 'c2', children: [{ name: 'f2' }] },
+            { name: 'd2', children: [{ name: 'g2' }] },
+        ],
+    }
+]
+// 深度
+function getNames(data) {
+    const result = []
+    data.forEach(item=>{
+        dfs(item)
+    })
+    const  dfs = data => {
+        result.push(data.name);
+        data.children && data.children.foreach(child=>dfs(child))
+    }
+    return result.join(',')
+}
+
+// 广度遍历
+function getNames(data) {
+    let result = []
+    let queue = data
+    while (queue.length>0) {
+        [...queue].forEach(child=>{
+            queue.shift()
+            result.push(childName);
+            child.children && (queue.push(...chuld.children))
+        })
+    }
+    return result.join(',')
+}
+```
