@@ -40,6 +40,20 @@ updated
 beforeDestory
 destoryed
 
+加载渲染过程
+父beforeCreate -> 父created -> 父beforeMount-> 子beforeCreate -> 子created -> 子beforeMount -> 子mounted -> 父mounted
+
+子组件更新过程
+父beforeUpdate -> 子beforeUpdate -> 子updated -> 父updated
+
+父组件更新过程
+父beforeUpdate -> 父updated
+
+销毁过程
+父beforeDestroy -> 子beforeDestroy -> 子destroyed -> 父destroyed
+
+
+
 vue3
 setup
 onBeforeMount
@@ -106,4 +120,53 @@ v-model绑定的不再是value，而是modelValue，接收的方法也不再是i
 - 自定义store
 
 
-#### 子组件调用父组件的方法
+#### Object.defineProperty 处理Array的push
+需要重新处理push方法
+```js
+ const originProto = Array.prototype
+    const arrayProto = Object.create(originProto)
+    arrayProto['push'] = function() {
+        originProto.push().apply(this,arguments)
+        console.log('jjjkjkjk')
+    }
+    data.__proto__= arrayProto
+    Object.defineProperty(data,'push',{
+        set:(newVal) =>{
+            console.log('kkkkjj')
+            render()
+        }
+    })
+```
+
+#### proxy 的写法
+
+```js
+ data = new Proxy(data,{
+        set:(target,key,value,receiver)=>{
+            console.log('key',key)
+            target[key]=value
+            // Reflect.set(target.key,value,receiver)
+            render()
+            return true
+
+        }
+    })
+```
+
+#### 浏览器回退、切换会触发vue的哪些生命周期
+
+页面刷新时, vue执行的生命周期钩子
+依次执行当前页面vue组件的beforeCreate, created, beforeMount, mounted, beforUpdate, updated
+
+页面后退时, vue执行的生命周期钩子
+假设从b页面后退到a页面
+依次执行a页面vue组件的beforeCreate, created, beforeMount, 然后是b页面组件的beforeDestroy, destroyed, 最后是执行a页面vue组件的mounted, beforUpdate, updated
+
+页面前进时, vue执行的生命周期钩子
+假设从a页面到b页面
+依次执行b页面vue组件的beforeCreate, created, beforeMount, 然后是a页面组件的beforeDestroy, destroyed, 最后是执行b页面vue组件的mounted, beforUpdate, updated
+
+
+#### vue 中的diff
+在vue1.0 中，通过watch来实现数据和视图的响应式更新，通过发布-订阅者模式
+在vue2.x中，因为还是无法解决响应式数据过多而引起的卡顿的问题，vue2.x 引入了虚拟DOM，对于 Vue 2 来说，组件之间的变化，可以通过响应式来通知更新。组件内部的数据变化，则通过虚拟DOM去更新页面。这样就把响应式的监听器，控制在了组件级别，而虚拟DOM的量级，也控制在了组件的大小。

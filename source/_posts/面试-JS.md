@@ -22,6 +22,10 @@ tags: [面试, JS]
 老生代的垃圾回收，使用标记清除。通过遍历调用栈，能够到达的元素称为活动对象，没有对象的可以判断为垃圾数据，进行标记。之后进行垃圾清除，这个是直接删除标记数据。清除之后，产生大量不连续的内存碎片，于是产生了标记-整理的过程。对所有的可以活动的对象向一端移动，清理边界以外的内存，从而占据连续的内存块。
 
 #### 2. 模块化
+AMD推崇依赖前置，在定义模块的时候就要声明其依赖的模块 CMD推崇就近依赖，只有在用到某个模块的时候再去require
+CommonJS通过同步的方式加载模块，其输出的模块是一个拷贝对象，所以修改原的模块不会对被引入的模块内部产生影响，且模块在代码运行的时候加载
+es6模块是在代码编译时输出接口即编译时加载，es6是通过命令来指定导出和加载，且导出的是模块中的只读引用，如果原始模块中的值被改变了，那么加载的值也会随之改变，所以是动态引用
+
 
 浏览器中 ES6 的模块化支持、node 采用 commonJS 的模块化支持
 分类
@@ -188,6 +192,12 @@ function _new(constructor, ...arg) {
   return Object.prototype.toString.call(res) === "[object Object]" ? res : obj;
 }
 ```
+
+#### 判断类型 typeOf、  instanceOf、Object.prototype.toString.call()
+typeOf 不能区分Array和Object
+instanceOf 不能区分基本类型
+
+
 
 #### 手动实现一个 instanceOf
 
@@ -370,3 +380,58 @@ function getNames(data) {
     return result.join(',')
 }
 ```
+
+
+#### node 的eventloop
+ node的 事件循环有times, I/o callbacks, idle prepare, poll,check,close callbacks
+- times 执行setTimeOut 和setTimeInterval
+-  check 直接执行setTimeImmediate
+
+#### this 的指向问题
+全局环境下this指向window，箭头函数的this永远指向创建当前词法环境时的this，作为构造函数时，函数中的this指向实例对象
+执行上下文在被执行的时候才会创建，创建执行上下文时才会绑定this，所以this的指向永远是在执行时确定
+
+
+#### ajax
+readyState 0 表示 请求还未初始化，尚未调用 open() 方法。
+1 表示 已建立服务器链接，open() 方法已经被调用。
+2 表示 请求已接受，send() 方法已经被调用，并且头部和状态已经可获得。
+3 表示 正在处理请求，下载中； responseText 属性已经包含部分数据。
+4 表示 完成，下载操作已完成。
+
+```js
+function ajax(url, method) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open(url, method, true)
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(xhr.responseText)
+          } else if (xhr.status === 404) {
+            reject(new Error('404'))
+          }
+        } else {
+          reject('请求数据失败')
+        }
+      }
+      xhr.send(null)
+    })
+  }
+```
+
+
+#### flutter 的生命周期
+分为两种情况，
+一个是statelessWidget 其生命周期是constructor、build、deactive、dispose
+另外一个是statefulWidget，其生命周期是constructor、initState、didChangeDependencies,build、didUpdate Widget、deactive、dispose
+
+#### js 加载的async 和defer的区别
+async script标签设置了这个值，则说明引入的js需要<strong>异步加载和执行</strong>
+在有async的情况下脚本异步加载和执行，并且不会阻塞页面加载，但是也并不会保证其加载的顺序，如果多个async优先执行，则先加载好的js文件，所以使用此方式加载的js文件最好不要包含其他依赖
+
+defer
+果使用此属性，也将会使js异步加载执行，且会在文档被解析完成后执行，这样就不会阻塞页面加载，但是它将会按照原来的执行顺序执行，对于有依赖关系的也可使用'
+
+如果只有async，那么脚本在下载完成后异步执行。
+如果只有defer，那么脚本会在页面解析完毕之后执行。
