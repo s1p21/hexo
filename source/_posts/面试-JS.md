@@ -106,6 +106,9 @@ function debounce(fn, delay) {
 
 #### 6. call、 apply 和 bind 的区别
 
+全局环境下this指向window，箭头函数的this永远指向创建当前词法环境时的this，作为构造函数时，函数中的this指向实例对象
+执行上下文在被执行的时候才会创建，创建执行上下文时才会绑定this，所以this的指向永远是在执行时确定
+
 call( this,a,b,c ) 在第一个参数之后的，后续所有参数就是传入该函数的值。apply( this,[a,b,c] ) 只有两个参数，第一个是对象，第二个是数组，这个数组就是该函数的参数。
 
 bind 除了返回是函数以外，它的参数和 call 一样。
@@ -137,7 +140,7 @@ Function.prototype.myapply = function(context, args) {
 };
 ```
 
-#### reduce 参数
+#### 7. reduce 参数
 
 arr.reduce(callback,[initialValue])
 
@@ -150,7 +153,7 @@ callback （执行数组中每个值的函数，包含四个参数）
 
 initialValue （作为第一次调用 callback 的第一个参数。）
 
-#### 深拷贝
+#### 8. 深拷贝
 
 ```js
 function deepClone=function() {
@@ -176,7 +179,7 @@ function deepClone=function() {
 }
 ```
 
-#### new 关键字做了什么
+#### 9. new 关键字做了什么
 
 做了四件事，1，创建空对象，2，将空对象的`__proto__`指向构造函数的`prototype`3，构造函数的 this 作用域赋给新对象，4，返回原始值需要忽略，返回对象需要正常处理
 
@@ -193,13 +196,13 @@ function _new(constructor, ...arg) {
 }
 ```
 
-#### 判断类型 typeOf、  instanceOf、Object.prototype.toString.call()
+#### 10. 判断类型 三种方式 
+typeOf、  instanceOf、Object.prototype.toString.call()
 typeOf 不能区分Array和Object
 instanceOf 不能区分基本类型
 
 
-
-#### 手动实现一个 instanceOf
+#### 11. 手动实现一个 instanceOf
 
 instanceOf 基于原型链
 
@@ -218,7 +221,7 @@ function isInstanceOf(child, fun) {
 }
 ```
 
-#### 观察者模式和发布订阅模式
+#### 12. 观察者模式和发布订阅模式
 
 观察者模式是一对多的依赖关系，他表示多个观察者对象同时监听某一个主题对象，当这个主题对象发生变化时，会通知所有观察者，使他们能够自我更新
 发布-订阅者模式引入了第三方组件，叫做信息中介，它将订阅者和发布者联系起来，当发布者发生变化时，由信息中介通知订阅者，并进行更新。
@@ -269,7 +272,7 @@ class PubSub() {
 }
 ```
 
-#### 虚拟 DOM 和真实 DOM 的转换
+#### 13. 虚拟 DOM 和真实 DOM 的转换
 
 ```js
 class VDom {
@@ -338,7 +341,7 @@ function parseVNode(vnode) {
 }
 ```
 
-#### 广度优先和深度优先
+#### 14. 广度优先和深度优先
 
 深度优先采用堆栈的形式，即先进后出
 广度优先采用队列的形式，先进先出
@@ -382,17 +385,15 @@ function getNames(data) {
 ```
 
 
-#### node 的eventloop
+#### 15. node 的eventloop
  node的 事件循环有times, I/o callbacks, idle prepare, poll,check,close callbacks
 - times 执行setTimeOut 和setTimeInterval
 -  check 直接执行setTimeImmediate
 
-#### this 的指向问题
-全局环境下this指向window，箭头函数的this永远指向创建当前词法环境时的this，作为构造函数时，函数中的this指向实例对象
-执行上下文在被执行的时候才会创建，创建执行上下文时才会绑定this，所以this的指向永远是在执行时确定
 
 
-#### ajax
+
+#### 16. ajax
 readyState 0 表示 请求还未初始化，尚未调用 open() 方法。
 1 表示 已建立服务器链接，open() 方法已经被调用。
 2 表示 请求已接受，send() 方法已经被调用，并且头部和状态已经可获得。
@@ -421,12 +422,12 @@ function ajax(url, method) {
 ```
 
 
-#### flutter 的生命周期
+#### 17. flutter 的生命周期
 分为两种情况，
 一个是statelessWidget 其生命周期是constructor、build、deactive、dispose
 另外一个是statefulWidget，其生命周期是constructor、initState、didChangeDependencies,build、didUpdate Widget、deactive、dispose
 
-#### js 加载的async 和defer的区别
+#### 18. js 加载的async 和defer的区别
 async script标签设置了这个值，则说明引入的js需要<strong>异步加载和执行</strong>
 在有async的情况下脚本异步加载和执行，并且不会阻塞页面加载，但是也并不会保证其加载的顺序，如果多个async优先执行，则先加载好的js文件，所以使用此方式加载的js文件最好不要包含其他依赖
 
@@ -435,3 +436,19 @@ defer
 
 如果只有async，那么脚本在下载完成后异步执行。
 如果只有defer，那么脚本会在页面解析完毕之后执行。
+
+#### 19. 虚拟列表
+可见区域
+
+* 列表高度是固定的，条数计算
+```js
+const height = 60
+const bufferSize = 5
+this.visibleCount = Math.ceil((window.clientHeight||window.screen.height) / height);
+
+```
+
+* 列表高度不固定
+通过观察者方式，来观察元素是否进入视口。我们会对固定元素的第一个和最后一个分别打上标签，例如把第一个元素的id设置为top，把最后一个元素的id值设置为bottom。
+此时调用异步的api：IntersectionObserver，他能获取到进入到视口的元素，判断当前进入视口的元素是最后个元素，则说明内容是往上滚的，如果进入视口的是第一个元素，则说明内容是往下滚的。
+我们依次保存下当前第一个元素距离顶部的高度和距离底部的高度，赋值给滚动内容元素的paddingTop和paddingBottom，这样内容区域的高度就不会坍塌，依旧保持这传统滚动元素充满列表时的内容高度:
