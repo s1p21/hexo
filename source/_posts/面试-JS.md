@@ -452,3 +452,20 @@ this.visibleCount = Math.ceil((window.clientHeight||window.screen.height) / heig
 通过观察者方式，来观察元素是否进入视口。我们会对固定元素的第一个和最后一个分别打上标签，例如把第一个元素的id设置为top，把最后一个元素的id值设置为bottom。
 此时调用异步的api：IntersectionObserver，他能获取到进入到视口的元素，判断当前进入视口的元素是最后个元素，则说明内容是往上滚的，如果进入视口的是第一个元素，则说明内容是往下滚的。
 我们依次保存下当前第一个元素距离顶部的高度和距离底部的高度，赋值给滚动内容元素的paddingTop和paddingBottom，这样内容区域的高度就不会坍塌，依旧保持这传统滚动元素充满列表时的内容高度:
+
+
+#### node 的多个通信
+通过socket 和HTTP进行通信
+同一台电脑通信可以通过IPC进行通信
+PM2 监听node的原理：
+pm2包括 Satan进程、God Deamon守护进程、进程间的远程调用rpc、cluster等几个概念
+1.Satan.js提供了程序的退出、杀死等方法，因此它是魔鬼；God.js 负责维护进程的正常运行，当有异常退出时能保证重启，所以它是上帝。作者这么命名，我只能说一句：oh my god。
+God进程启动后一直运行，它相当于cluster中的Master进程，守护者worker进程的正常运行。
+
+2.rpc（Remote Procedure Call Protocol）是指远程过程调用，也就是说两台服务器A，B，一个应用部署在A服务器上，想要调用B服务器上应用提供的函数/方法，由于不在一个内存空间，不能直接调用，需要通过网络来表达调用的语义和传达调用的数据。同一机器不同进程间的方法调用也属于rpc的作用范畴。
+
+3.代码中采用了axon-rpc 和 axon 两个库，基本原理是提供服务的server绑定到一个域名和端口下，调用服务的client连接端口实现rpc连接。后续新版本采用了pm2-axon-rpc 和 pm2-axon两个库，绑定的方法也由端口变成.sock文件，因为采用port可能会和现有进程的端口产生冲突。
+
+每次命令行的输入都会执行一次satan程序。如果God进程不在运行，首先需要启动God进程。然后根据指令，satan通过rpc调用God中对应的方法执行相应的逻辑。
+God在初次执行时会配置cluster，同时监听cluster中的事件：
+在God启动后， 会建立Satan和God的rpc链接，然后调用prepare方法。prepare方法会调用cluster.fork，完成集群的启动
