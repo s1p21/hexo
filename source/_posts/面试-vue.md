@@ -168,5 +168,42 @@ v-model绑定的不再是value，而是modelValue，接收的方法也不再是i
 
 
 #### vue 中的diff
-在vue1.0 中，通过watch来实现数据和视图的响应式更新，通过发布-订阅者模式
+在vue1.0 中，通过watch来实现数据和视图的响应式更新，通过观察者模式
 在vue2.x中，因为还是无法解决响应式数据过多而引起的卡顿的问题，vue2.x 引入了虚拟DOM，对于 Vue 2 来说，组件之间的变化，可以通过响应式来通知更新。组件内部的数据变化，则通过虚拟DOM去更新页面。这样就把响应式的监听器，控制在了组件级别，而虚拟DOM的量级，也控制在了组件的大小。
+
+如果没有绑定key，对于DOM的顺序发生变化，比如直接插入，会导致后面的数据不变的组件重新渲染
+
+#### vue 的keep-alive的作用是什么？怎么实现的？如何刷新的?
+保持组件不被销毁，组件挂载的数据还存在，所以状态就可以保留。
+在首次加载被包裹组建时，由keep-alive.js中的render函数可知，vnode.componentInstance的值是undfined，keepAlive的值是true，因为keep-alive组件作为父组件，它的render函数会先于被包裹组件执行；那么只执行到i(vnode,false)，后面的逻辑不执行；
+再次访问被包裹组件时，vnode.componentInstance的值就是已经缓存的组件实例，那么会执行insert(parentElm, vnode.elm, refElm)逻辑，这样就直接把上一次的DOM插入到父元素中。
+
+在patch的阶段，最后会执行invokeInsertHook函数，而这个函数就是去调用组件实例（VNode）自身的insert钩子：
+在insert这个钩子里面，调用了activateChildComponent函数递归地去执行所有子组件的activated钩子函数：
+相反地，deactivated钩子函数也是一样的原理，在组件实例（VNode）的destroy钩子函数中调用deactivateChildComponent函数。
+
+
+#### render 和template 的区别
+template----html的方式做渲染
+render----js的方式做渲染
+render（提供）是一种编译方式
+render里有一个函数h，这个h的作用是将单文件组件进行虚拟DOM的创建，然后再通过render进行解析。
+h就是createElement()方法：createElement(标签名称,属性配置,children)
+template也是一种编译方式，但是template最终还是要通过render的方式再次进行编译。
+
+
+render渲染方式可以让我们将js发挥到极致，因为render的方式其实是通过createElement()进行虚拟DOM的创建。逻辑性比较强，适合复杂的组件封装。
+template是类似于html一样的模板来进行组件的封装。
+render的性能比template的性能好很多
+render函数优先级大于template
+
+
+#### vue3 生命周期实现原理
+就是把各个生命周期的函数挂载或者叫注册到组件的实例上，然后等到组件运行到某个时刻，再去组件实例上把相应的生命周期的函数取出来执行。
+各个生命周期的Hooks函数是通过createHook这个函数创建的。createHook是一个闭包函数，通过闭包缓存当前是属于哪个生命周期的Hooks,target表示该生命周期Hooks函数被绑定到哪个组件实例上，默认是当前工作的组件实例。createHook底层又调用了一个injectHook的函数，那么下面我们继续来看看这个injectHook函数。
+
+Vue3组件实例化之后，通过effect包装一个更新的副作用函数来和响应式数据进行依赖收集。在这个副作用函数里面有两个分支，第一个是组件挂载之前执行的，也就是生命周期函数beforeMount和mount调用的地方，第二个分支是组件挂载之后更新的时候执行的，在这里就是生命周期函数beforeUpdate和updated调用的地方。具体就是在挂载之前，还没生成虚拟DOM之前就执行beforeMount函数，之后则去生成虚拟DOM经过patch之后，组件已经被挂载到页面上了，也就是页面上显示视图了，这个时候就去执行mount函数;在更新的时候，还没获取更新之后的虚拟DOM之前执行beforeUpdate，然后去获取更新之后的虚拟DOM，然后再去patch，更新视图，之后就执行updated。需要注意的是beforeMount和beforeUpdate是同步执行的，都是通过invokeArrayFns来调用的
+
+Vue的Hooks设计是从React的Hooks那里借鉴过来的，React的Hooks的本质就是把状态变量、副作用函数存到函数组件的fiber对象上，等到将来状态变量发生改变的时候，相关的函数组件fiber就重新进行更新。Vue3这边的实现原理也类似，通过上面的生命周期的Hooks实现原理，我们可以知道Vue3的生命周期的Hooks是绑定到具体的组件实例上，而状态变量，则因为Vue的变量是响应式的，状态变量会通过effect和具体的组件更新函数进行依赖收集，然后进行绑定，将来状态变量发生改变的时候，相应的组件更新函数会重新进入调度器的任务队列进行调度执行。
+
+所以Hooks的本质就是让那些状态变量或生命周期函数和组件绑定起来，组件运行到相应时刻执行相应绑定的生命周期函数，那些绑定的变量发生改变的时候，相应的组件也重新进行更新。

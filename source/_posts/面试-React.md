@@ -30,9 +30,12 @@ reconciliation (调度算法，也可称为 render):
 通过新旧 vdom 进行 diff 算法，获取 vdom change；
 确定是否需要重新渲染
 
+- Render 阶段就是根据每个组件中的状态构建出一个新的 UI Tree，也叫WorkInProgress Tree，并为每一个结点对应的操作打上 EffectTag，即更新、删除、新增。全部构建完成后就进入下一阶段。
+
+
 
 commit:
-
+- Commit 阶段就是将构建好的 WIP Tree 反应到浏览器中，即 React 为我们自动进行相应的 dom 操作，保持 UI 一致性。
 如需要，则操作 dom 节点更新；
 
 要了解 Fiber，我们首先来看为什么需要它？
@@ -221,8 +224,36 @@ const App:React.FC=()=>{
 
 对 React Hooks 而言，调用必须放在最前面，而且不能被包含在条件语句里，这是因为 React Hooks 采用下标方式寻找状态，一旦位置不对或者 Hooks 放在了条件中，就无法正确找到对应位置的值。
 所有 Hooks 都在渲染闭包中执行，每次重渲染都有一定性能压力，而且频繁的渲染会带来许多闭包，虽然可以依赖 GC 机制回收，但会给 GC 带来不小的压力。
-需要用useCallback、useMemo 来做性能优化
+需要用useCallback、useMemo 来做性能优化，两者的区别在于一个存储函数的本身(useCallback) 一个存储函数返回的值（useMemo）
 
+useLayoutEffect
+跟 useEffect 使用差不多，通过同步执行状态更新可解决一些特性场景下的页面闪烁问题
+useLayoutEffect 会阻塞渲染，请谨慎使用
+
+* DOM更新同步钩子。用法与useEffect类似，只是区别于执行时间点的不同。
+* useEffect属于异步执行，并不会等待 DOM 真正渲染后执行，而useLayoutEffect则会真正渲染后才触发；
+* 可以获取更新后的 state；
+
+
+useReducer
+
+接收一个形如 (state, action) => newState 的 reducer，并返回当前的 state 以及与其配套的 dispatch 方法
+* reducer 本质是一个纯函数，每次只返回一个值，那个值可以是数字，字符串，对象，数组或者对象，但是它总是一个值
+* React 会确保 dispatch 函数的标识是稳定的，并且不会在组件重新渲染时改变
+* useReducer 还能给那些会触发深更新的组件做性能优化，因为可以向子组件传递 dispatch 而不是回调函数
+* reducer 更适合去处理比较复杂的 state，来维护组件的状态
+
+类似于 Redux 思想的实现，但其并不足以替代 Redux，可以理解成一个组件内部的 redux:
+  * 并不是持久化存储，会随着组件被销毁而销毁；
+  * 属于组件内部，各个组件是相互隔离的，单纯用它并无法共享数据；
+  * 配合useContext的全局性，可以完成一个轻量级的 Redux；(easy-peasy)
+
+useContext
+
+* 接收一个 context 对象（React.createContext 的返回值）并返回该 context 的当前值
+* useContext 的参数必须是 context 对象本身
+* 当前的 context 值由上层组件中距离当前组件最近的 <MyContext.Provider> 的 value prop 决定
+* 调用了 useContext 的组件总会在 context 值变化时重新渲染
 
 #### React diff
 要求：1、跨层级节点移动操作较少；2、相同类的两个组件会生成相似的树形结构；3、同一层的一组节点，通过唯一的key进行区分
@@ -237,9 +268,16 @@ const App:React.FC=()=>{
 umi 企业级的前端开发框架，Umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。然后配以生命周期完善的插件体系，覆盖从源码到构建产物的每个生命周期，支持各种功能扩展和业务需求。
 
 特性：插件化、MFSU
+![](images/umi.png)
 
 dva 是基于redux的前端数据流方案
 特性：
 - 易学易用
+
+特点：
+modal、namespace、state、effect、reducer、subscription
+- effect:以 key/value 格式定义 effect。用于处理异步操作和业务逻辑，不直接修改 state
+- reducer:以 key/value 格式定义 reducer。用于处理同步操作，唯一可以修改 state 的地方，由 action 触发
+- subscription:以 key/value 格式定义 subscription。subscription 是订阅，用于订阅一个数据源，然后根据需要 dispatch 相应的 action。在 app.start() 时被执行，数据源可以是当前的时间、服务器的 websocket 连接、keyboard 输入、geolocation 变化、history 路由变化等等。
 
 

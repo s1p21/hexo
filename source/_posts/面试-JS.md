@@ -4,7 +4,7 @@ date: 2022-11-29 17:13:37
 tags: [面试, JS]
 ---
 
-#### 1. 说下 js 的内存泄漏，什么情况容易出现内存泄漏？怎么解决？垃圾回收机制是怎么样的？
+#### 1.  js 垃圾回收机制
 
 答:js 的内存泄漏可以通过三个:闭包、全局变量、对象属性循环使用、DOM 节点删除时未解绑事件、计时器引用未及时删除
 
@@ -27,8 +27,30 @@ CommonJS通过同步的方式加载模块，其输出的模块是一个拷贝对
 es6模块是在代码编译时输出接口即编译时加载，es6是通过命令来指定导出和加载，且导出的是模块中的只读引用，如果原始模块中的值被改变了，那么加载的值也会随之改变，所以是动态引用
 
 
+##### CommonJS 与 ESM 的区别
+
+实际开发中，经常会将 ESM 和 CommonJS 混用，因此有必要了解它们之间的区别。
+
+###### 动态与静态
+
+CommonJS中对模块依赖的解决是“动态的”，而ESM是静态的。所谓动态，是指模块依赖关系的建立发生在代码运行阶段；而静态是指模块依赖关系的建立发生在代码编译阶段。
+
+CommonJS在运行时才会加载模块，确定模块依赖关系。因此可以在任意地方导入模块，甚至可以通过if语句来判断是否加载某个模块。
+
+ESM的导入、导出语句都是声明式的，导入和导出语句必须位于模块的顶层作用域。它是一种静态的模块结构，在编译阶段就可以分析出模块的依赖关系。相比CommonJS，其具有以下优势：
+
+死代码检测和排除。可以减小打包资源体积。
+
+模块变量类型检查。
+
+编译器优化。CommonJS中不论采用那种方式，本质上导入的都是一个对象。而ESM中，可以直接导入变量，减少了引用层级，程序效率更高。
+
+###### 值拷贝和动态映射
+
+导入一个模块时，CommonJS中获取的是一份值的拷贝，而在ESM中，获取的是值的动态映射，并且这个映射是只读的。
+
+
 浏览器中 ES6 的模块化支持、node 采用 commonJS 的模块化支持
-分类
 
 - es6 `import/export`
 - commonjs `require/module.exports/exports`
@@ -274,6 +296,8 @@ class PubSub() {
 
 #### 13. 虚拟 DOM 和真实 DOM 的转换
 
+虚拟DOM缺点：在首次渲染时，多了一层虚拟DOM的计算，影响性能
+
 ```js
 class VDom {
   constructor(tag, data, value, type) {
@@ -341,55 +365,12 @@ function parseVNode(vnode) {
 }
 ```
 
-#### 14. 广度优先和深度优先
-
-深度优先采用堆栈的形式，即先进后出
-广度优先采用队列的形式，先进先出
-
-```js
-const data = [
-    {   name: 'a2',
-        children: [
-            { name: 'b2', children: [{ name: 'e2' }] },
-            { name: 'c2', children: [{ name: 'f2' }] },
-            { name: 'd2', children: [{ name: 'g2' }] },
-        ],
-    }
-]
-// 深度
-function getNames(data) {
-    const result = []
-    data.forEach(item=>{
-        dfs(item)
-    })
-    const  dfs = data => {
-        result.push(data.name);
-        data.children && data.children.foreach(child=>dfs(child))
-    }
-    return result.join(',')
-}
-
-// 广度遍历
-function getNames(data) {
-    let result = []
-    let queue = data
-    while (queue.length>0) {
-        [...queue].forEach(child=>{
-            queue.shift()
-            result.push(childName);
-            child.children && (queue.push(...chuld.children))
-        })
-    }
-    return result.join(',')
-}
-```
 
 
 #### 15. node 的eventloop
- node的 事件循环有times, I/o callbacks, idle prepare, poll,check,close callbacks
+ node的 事件循环有times, pending callbacks(I/o callbacks, idle prepare), poll,check,close callbacks
 - times 执行setTimeOut 和setTimeInterval
--  check 直接执行setTimeImmediate
-
+- check 直接执行setTimeImmediate
 
 
 
@@ -454,7 +435,7 @@ this.visibleCount = Math.ceil((window.clientHeight||window.screen.height) / heig
 我们依次保存下当前第一个元素距离顶部的高度和距离底部的高度，赋值给滚动内容元素的paddingTop和paddingBottom，这样内容区域的高度就不会坍塌，依旧保持这传统滚动元素充满列表时的内容高度:
 
 
-#### node 的多个通信
+#### 20. node 的多个通信
 通过socket 和HTTP进行通信
 同一台电脑通信可以通过IPC进行通信
 PM2 监听node的原理：
@@ -468,4 +449,478 @@ God进程启动后一直运行，它相当于cluster中的Master进程，守护�
 
 每次命令行的输入都会执行一次satan程序。如果God进程不在运行，首先需要启动God进程。然后根据指令，satan通过rpc调用God中对应的方法执行相应的逻辑。
 God在初次执行时会配置cluster，同时监听cluster中的事件：
-在God启动后， 会建立Satan和God的rpc链接，然后调用prepare方法。prepare方法会调用cluster.fork，完成集群的启动
+在God启动后， 会建立Satan和God的rpc链接，然后调用prepare方法。prepare方法会调用cluster.fork，完成集群的启动.
+
+#### 21. 性能指标：
+* FP（首次绘制）
+* FCP（首次内容绘制 First contentful paint）
+* LCP（最大内容绘制时间 Largest contentful paint）
+* FPS（每秒传输帧数）
+* CLS (累积布局偏移)
+* TTI（页面可交互时间 Time to Interactive）
+* HTTP 请求响应时间
+* DNS 解析时间
+* TCP 连接时间
+
+#### 22. interface 和 type 、 泛型位置
+interface 只能定义对象类型。type声明可以声明任何类型。
+
+interface 能够声明合并，两个相同接口会合并。Type声明合并会报错
+type可以类型推导
+
+
+// 定义callback遍历方法 两种方式 应该采用哪一种？
+`type Callback = <T>(item: T) => void`
+// 第二种声明方式
+`type Callback<T> = (item: T) => void;`
+
+当泛型出现在内部时，比接口本身并不具备任何泛型定义。而接口代表的函数则会接受一个泛型定义。换句话说接口本身不需要泛型，而在实现使用接口代表的函数类型时需要声明该函数接受一个泛型参数。
+
+当泛型出现在接口中时，比如Callback<T> 代表的是使用接口时需要传入泛型的类型.
+
+#### 24 箭头函数
+this的作用域
+但是没有prototype属性没有构造器特性，所以也就没有所谓的constructor，就不能作为构造器使用。
+箭头函数的作用域不能通过.call、.apply、.bind等语法来改变，这使得箭头函数的上下文将永久不变
+箭头函数不能使用关键字arguments来访问，只能通过定义的命名参数来访问。
+
+#### 25 JS 设计模式
+
+- 单例模式
+- 工厂模式
+- 装饰器模式
+- 观察者模式
+- 发布-订阅者模式
+- 策略模式
+- 访问者模式（bable插件）
+
+装饰器模式
+在不改变对象自身的基础上，动态地给某个对象添加一些额外的职责
+```js
+function fuc() {
+  console.log(2);
+}
+Function.prototype.before = function(beFn) {
+  let self = this;
+  return function() {
+    beFn.apply(this, arguments); // 先执行插入到前面的方法，类似于二叉树的前序遍历
+    return self.apply(this, arguments); // 后执行当前的方法
+  };
+};
+Function.prototype.after = function(afFn) {
+  let self = this;
+  return function() {
+    self.apply(this, arguments); // 先执行当前的方法
+    return afFn.apply(this, arguments); // 后执行插入到后面的方法
+  };
+};
+
+function fuc1() {
+  console.log(1);
+}
+function fuc3() {
+  console.log(3);
+}
+function fuc4() {
+  console.log(4);
+}
+
+fuc = fuc.before(fuc1).before(fuc4).after(fuc3);
+fuc();
+```
+
+访问者模式
+在不改变该对象的前提下访问其结构中元素的新方法
+```js
+// 元素类
+class Student {
+  constructor(name, chinese, math, english) {
+    this.name = name;
+    this.chinese = chinese;
+    this.math = math;
+    this.english = english;
+  }
+
+  accept(visitor) {
+    visitor.visit(this);
+  }
+}
+
+// 访问者类
+class ChineseTeacher {
+  visit(student) {
+    console.log(`语文 ${student.chinese}`);
+  }
+}
+
+class MathTeacher {
+  visit(student) {
+    console.log(`数学 ${student.math}`);
+  }
+}
+
+class EnglishTeacher {
+  visit(student) {
+    console.log(`英语 ${student.english}`);
+  }
+}
+
+// 实例化元素类
+const student = new Student("张三", 90, 80, 60);
+// 实例化访问者类
+const chineseTeacher = new ChineseTeacher();
+const mathTeacher = new MathTeacher();
+const englishTeacher = new EnglishTeacher();
+// 接受访问
+student.accept(chineseTeacher); // 语文90
+student.accept(mathTeacher); // 数学80
+student.accept(englishTeacher); // 英语60
+```
+
+### 26. async await 
+作用：用同步方式，执行异步操作
+
+总结
+
+1）async函数是generator（迭代函数）的语法糖
+
+2）async函数返回的是一个Promise对象，有无值看有无return值
+
+3）await关键字只能放在async函数内部，await关键字的作用 就是获取Promise中返回的resolve或者reject的值
+
+4）async、await要结合try/catch使用，防止意外的错误
+
+```js
+function generatorToAsync(generatorFn) {
+  return function() {
+    const gen = generatorFn.apply(this, arguments) // gen有可能传参
+
+    // 返回一个Promise
+    return new Promise((resolve, reject) => {
+
+      function go(key, arg) {
+        let res
+        try {
+          res = gen[key](arg) // 这里有可能会执行返回reject状态的Promise
+        } catch (error) {
+          return reject(error) // 报错的话会走catch，直接reject
+        }
+
+        // 解构获得value和done
+        const { value, done } = res
+        if (done) {
+          // 如果done为true，说明走完了，进行resolve(value)
+          return resolve(value)
+        } else {
+          // 如果done为false，说明没走完，还得继续走
+
+          // value有可能是：常量，Promise，Promise有可能是成功或者失败
+          return Promise.resolve(value).then(val => go('next', val), err => go('throw', err))
+        }
+      }
+
+      go("next") // 第一次执行
+    })
+  }
+}
+
+const asyncFn = generatorToAsync(gen)
+
+asyncFn().then(res => console.log(res))
+```
+
+#### 27.实现一个批量请求函数
+
+```js
+async function run(){
+    for (let i=0;i<idArray.length;i++){
+        let promise = request(idArray[i]);
+        promise.then((res)=>{
+            console.log(`id${res}的请求已经处理完毕,当前并发为${pool.length}`);
+            pool.splice(pool.indexOf(promise),1);
+        })
+        pool.push(promise);
+        //这里是重点，当满了就阻塞
+        if (pool.length==max){
+            await Promise.race(pool);
+        }
+    }
+}
+run();
+```
+
+### 28.Promise then 第二个参数和catch的区别是什么
+主要区别就是，如果在then的第一个函数里抛出了异常，后面的catch能捕获到，而then的第二个函数捕获不到。
+then的第二个参数和catch捕获错误信息的时候会就近原则，如果是promise内部报错，reject抛出错误后，then的第二个参数和catch方法都存在的情况下，只有then的第二个参数能捕获到，如果then的第二个参数不存在，则catch方法会捕获到。
+
+### 29. promise finally 方法实现
+调用当前 Promise 的 then 方法返回一个新的 Promise 对象（保证链式调用）
+调用 Promise 中的 resolve 方法进行返回
+
+```js
+
+Promise.prototype.finally = function (callback) {
+  return this.then(
+    (data) => {
+      return Promise.resolve(callback()).then(() => data);
+    },
+    (err) => {
+      return Promise.resolve(callback()).then(() => {
+        throw err;
+      });
+    }
+  );
+};
+```
+
+### 30. sleep函数的多种实现
+JS没有语言内置的休眠（sleep or wait）函数，所谓的sleep只是实现一种延迟执行的效果
+等待指定时间后再执行对应方法
+- 循环阻止
+- 定时器
+- promise
+- async await的promise实现
+
+```js
+function sleep1(fn, time) {
+  let start = new Date().getTime();
+  while (new Date().getTime() - start < time) {
+    continue;
+  }
+  fn();
+}
+
+// 方式二： 定时器
+function sleep2(fn, time) {
+  setTimeout(fn, time);
+}
+
+// 方式三：promise
+function sleep3(fn, time) {
+  new Promise(resolve => {
+    setTimeout(resolve, time);
+  }).then(() => {
+    fn();
+  });
+}
+
+// 方式四：async await
+async function sleep4(fn, time) {
+  await new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+  fn();
+}
+function fn() { console.log("fn")}
+
+sleep1(fn, 2000);
+sleep2(fn, 2000);
+sleep3(fn, 2000);
+sleep4(fn, 2000);
+```
+
+### 手写map
+```js
+Array.prototype.selfMap = function(fn, content) {
+  // map中的第二个参数作为fn函数的this
+  // Array.prototype.slice.call将类数组转化为数组，同Array.from, this为调用的数组（arr）
+  let arr = Array.prototype.slice.call(this);
+  let mappedArr = Array(); // 创建一个空数组
+  for (let i = 0; i < arr.length; i++) {
+    // 判断稀疏数组，跳过稀疏数组中的空值
+    // 稀疏数组：数组中元素的个数小于数组的长度，比如Array(2) 长度为2的稀疏数组
+    if (!arr.hasOwnProperty(i)) continue;
+    mappedArr[i] = fn.call(content, arr[i]);
+  }
+  return mappedArr;
+};
+let arr = [1, 2, 3];
+console.log(arr.selfMap(item => item * 2)); // [2, 4, 6]
+```
+
+### 前端错误捕获
+错误信息分为以下几种：
+- JS 代码运行错误、语法错误等
+- 异步错误等
+- 静态资源加载错误
+- 接口请求报错
+
+try/catch 只能捕获常规的运行错误，语法错误和异步错误无法捕获
+window.onerror 可以捕获常规的错误、异步错误、但不能捕获资源错误
+window.addEventListener 当静态资源加载失败时，会触发error事件
+promise错误，无法被以上几种捕获，可通过unhandledrejection 事件来处理
+```js
+// unhandledrejection 可以捕获Promise中的错误 ✅
+window.addEventListener("unhandledrejection", function(e) {
+  console.log("捕获到异常", e);
+  // preventDefault阻止传播，不会在控制台打印
+  e.preventDefault();
+});
+
+```
+
+vue 错误 window.onerror 和 error 事件不能捕获到常规的代码错误,vue 通过 Vue.config.errorHander 来捕获异常：
+```js
+Vue.config.errorHandler = (err, vm, info) => {
+    console.log('进来啦~', err);
+}
+```
+
+React 错误
+从 react16 开始，官方提供了 ErrorBoundary 错误边界的功能，被该组件包裹的子组件，render 函数报错时会触发离当前组件最近父组件的ErrorBoundary，生产环境，一旦被 ErrorBoundary 捕获的错误，也不会触发全局的 window.onerror 和 error 事件
+react项目中，可以在 componentDidCatch 中将捕获的错误上报
+
+跨域问题：如果当前页面中，引入了其他域名的JS资源，如果资源出现错误，error 事件只会监测到一个 script error 的异常。是由于浏览器基于安全考虑，故意隐藏了其它域JS文件抛出的具体错误信息，这样可以有效避免敏感信息无意中被第三方(不受控制的)脚本捕获到，因此，浏览器只允许同域下的脚本捕获具体的错误信息
+
+接口错误
+1）拦截XMLHttpRequest请求示例：
+```js
+function xhrReplace() {
+  if (!("XMLHttpRequest" in window)) {
+    return;
+  }
+  const originalXhrProto = XMLHttpRequest.prototype;
+  // 重写XMLHttpRequest 原型上的open方法
+  replaceAop(originalXhrProto, "open", originalOpen => {
+    return function(...args) {
+      // 获取请求的信息
+      this._xhr = {
+        method: typeof args[0] === "string" ? args[0].toUpperCase() : args[0],
+        url: args[1],
+        startTime: new Date().getTime(),
+        type: "xhr"
+      };
+      // 执行原始的open方法
+      originalOpen.apply(this, args);
+    };
+  });
+  // 重写XMLHttpRequest 原型上的send方法
+  replaceAop(originalXhrProto, "send", originalSend => {
+    return function(...args) {
+      // 当请求结束时触发，无论请求成功还是失败都会触发
+      this.addEventListener("loadend", () => {
+        const { responseType, response, status } = this;
+        const endTime = new Date().getTime();
+        this._xhr.reqData = args[0];
+        this._xhr.status = status;
+        if (["", "json", "text"].indexOf(responseType) !== -1) {
+          this._xhr.responseText =
+            typeof response === "object" ? JSON.stringify(response) : response;
+        }
+        // 获取接口的请求时长
+        this._xhr.elapsedTime = endTime - this._xhr.startTime;
+
+        // 上报xhr接口数据
+        reportData(this._xhr);
+      });
+      // 执行原始的send方法
+      originalSend.apply(this, args);
+    };
+  });
+}
+
+/**
+ * 重写指定的方法
+ * @param { object } source 重写的对象
+ * @param { string } name 重写的属性
+ * @param { function } fn 拦截的函数
+ */
+function replaceAop(source, name, fn) {
+  if (source === undefined) return;
+  if (name in source) {
+    var original = source[name];
+    var wrapped = fn(original);
+    if (typeof wrapped === "function") {
+      source[name] = wrapped;
+    }
+  }
+}
+```
+拦截fetch为例
+```js
+function fetchReplace() {
+  if (!("fetch" in window)) {
+    return;
+  }
+  // 重写fetch方法
+  replaceAop(window, "fetch", originalFetch => {
+    return function(url, config) {
+      const sTime = new Date().getTime();
+      const method = (config && config.method) || "GET";
+      let handlerData = {
+        type: "fetch",
+        method,
+        reqData: config && config.body,
+        url
+      };
+
+      return originalFetch.apply(window, [url, config]).then(
+        res => {
+          // res.clone克隆，防止被标记已消费
+          const tempRes = res.clone();
+          const eTime = new Date().getTime();
+          handlerData = {
+            ...handlerData,
+            elapsedTime: eTime - sTime,
+            status: tempRes.status
+          };
+          tempRes.text().then(data => {
+            handlerData.responseText = data;
+            // 上报fetch接口数据
+            reportData(handlerData);
+          });
+
+          // 返回原始的结果，外部继续使用then接收
+          return res;
+        },
+        err => {
+          const eTime = new Date().getTime();
+          handlerData = {
+            ...handlerData,
+            elapsedTime: eTime - sTime,
+            status: 0
+          };
+          // 上报fetch接口数据
+          reportData(handlerData);
+          throw err;
+        }
+      );
+    };
+  });
+}
+```
+
+
+### 首屏加载时间计算
+首屏加载时间和首页加载时间不一样，首屏指的是屏幕内的dom渲染完成的时间
+比如首页很长需要好几屏展示，这种情况下屏幕以外的元素不考虑在内
+计算首屏加载时间流程
+
+1）利用MutationObserver监听document对象，每当dom变化时触发该事件
+
+2）判断监听的dom是否在首屏内，如果在首屏内，将该dom放到指定的数组中，记录下当前dom变化的时间点
+
+3）在MutationObserver的callback函数中，通过防抖函数，监听document.readyState状态的变化
+
+4）当document.readyState === 'complete'，停止定时器和取消对document的监听
+
+5）遍历存放dom的数组，找出最后变化节点的时间，用该时间点减去performance.timing.navigationStart 得出首屏的加载时间
+
+
+### 图片打点上报的优势：
+1）支持跨域，一般而言，上报域名都不是当前域名，上报的接口请求会构成跨域
+2）体积小且不需要插入dom中
+3）不需要等待服务器返回数据
+图片打点缺点是：url受浏览器长度限制
+
+### 浏览器事件循环机制
+事件循环其实就是在事件驱动模式中来管理和执行事件的一套流程。包括两种，一种是事件驱动，另外一种是状态驱动或数据驱动。
+在事件驱动中，当有事件触发后，被触发的事件会按顺序暂时存在一个队列中，待 JS 的同步任务执行完成后，会从这个队列中取出要处理的事件并进行处理
+
+JS 按顺序执行执行栈中的方法，每次执行一个方法时，会为这个方法生成独有的执行环境（上下文 context)，待这个方法执行完成后，销毁当前的执行环境，并从栈中弹出此方法（即消费完成），然后继续下一个方法。在事件驱动的模式下，至少包含了一个执行循环来检测任务队列是否有新的任务。通过不断循环去取出异步回调来执行，这个过程就是事件循环，而每一次循环就是一个事件周期或称为一次 tick。
+
+
+事件循环的过程中，执行栈在同步代码执行完成后，优先检查微任务队列是否有任务需要执行，如果没有，再去宏任务队列检查是否有任务执行，如此往复。微任务一般在当前循环就会优先执行，而宏任务会等到下一次循环，因此，微任务一般比宏任务先执行，并且微任务队列只有一个，宏任务队列可能有多个。另外我们常见的点击和键盘等事件也属于宏任务。
+根据任务的种类不同，可以分为微任务（micro task）队列和宏任务（macro task）队列。
+常见宏任务：setTimeout() setInterval()
+常见微任务：promise.then() MutaionObserver nextTick
