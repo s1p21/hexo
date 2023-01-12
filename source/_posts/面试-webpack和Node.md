@@ -1,7 +1,7 @@
 ---
-title: 面试-webpack
+title: 面试-webpack和Node
 date: 2022-12-04 19:26:39
-tags: [面试,webpack]
+tags: [面试,webpack,Node]
 ---
 
 #### loader 和plugin的区别
@@ -90,12 +90,10 @@ cacheLoader
 
 
 
-
-
 #### 什么是Tree-Shark
 
 摇树优化 (Tree-shaking)，这是一种形象比喻。我们把打包后的代码比喻成一棵树，这里其实表示的就 是，通过工具 "摇" 我们打包后的 js 代码，将没有使用到的无用代码 "摇" 下来 (删除)。即 消除那些被 引用了但未被使用 的模块代码。
-原理: 由于是在编译时优化，因此最基本的前提就是语法的静态分析，ES6的模块机制 提供了这种可能性。不需要运行时，便可进行代码字面上的静态分析，确定相应的依赖关系。
+原理: 由于是在编译时优化，因此最基本的前提就是语法的静态分析，ES6的模块机制提供了这种可能性。不需要运行时，便可进行代码字面上的静态分析，确定相应的依赖关系。
 问题: 具有副作用的函数无法被 tree-shaking。 在引用一些第三方库，需要去观察其引入的代码 量是不是符合预期; 尽量写纯函数，减少函数的副作用; 可使用 webpack-deep-scope-plugin， 可以进行作用域分析，减少此类情况的发生，但仍需要注意;
 
 
@@ -172,3 +170,37 @@ let a = 1，转化成AST的结果
 }
 
 ```
+
+
+### koa和express的区别
+express框架是一个基于 Node.js 平台的极简、灵活的 web 应用开发框架，主要基于 Connect 中间件，并且自身封装了路由、视图处理等功能。
+
+koa是 Express 原班人马基于 ES6 新特性重新开发的框架，主要基于 co 中间件，框架自身不包含任何中间件，很多功能需要借助第三方中间件解决，但是由于其基于 ES6 generator 特性的异步流程控制，解决了 "callback hell" 和麻烦的错误处理问题。
+
+相同点
+两个框架都对http进行了封装。相关的api都差不多，同一批人所写。
+
+不同点
+express内置了许多中间件可供使用，而koa没有。
+
+express包含路由，视图渲染等特性，而koa只有http模块。
+
+express的中间件模型为线型，而koa的中间件模型为U型，也可称为洋葱模型构造中间件。
+
+express通过回调实现异步函数，在多个回调、多个中间件中写起来容易逻辑混乱。
+
+
+### node的错误监控
+try catch 通常用于捕获throw抛出的错误
+
+callback(err, result)回调函数处理
+
+Emitter.on的回调函数 on注册了事件和回调函数， 并且在emit触发事件后会执行回调函数，以达到捕获错误的解决方式。
+
+
+process.on("error", function(err){})
+错误异常有两种场景的出现：
+
+一种是代码运行中throw new error没有被捕获，另一种是Promise的失败回调函数，没有对应的reject回调函数处理，针对这两种情况Nodejs都有默认的统一处理方式，就是给整个进程process对象监听相应的错误事件。
+process.on('uncaughtException',function(err){}) //监听未捕获的异常
+process.on('unhandledRejection',function(err,promise){}) //监听Promise没有被捕获的失败函数

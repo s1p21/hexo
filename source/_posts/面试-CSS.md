@@ -4,7 +4,8 @@ date: 2022-11-29 17:10:51
 tags: [面试,css]
 ---
 
-#### 1.定位、布局:不同定位的区别，两栏布局、三栏布局，flex布局必会
+#### 1.定位、布局
+不同定位的区别，两栏布局、三栏布局，flex布局必会
  两栏布局:浮动布局、flex
  三栏布局:双飞翼布局 三栏都采用左浮动
  
@@ -45,6 +46,13 @@ tags: [面试,css]
 </div>
 ```
 
+CSS三列布局
+- float布局：左边左浮动，右边右浮动，中间margin：0 100px;
+- Position布局: 左边left：0; 右边right：0; 中间left: 100px; right: 100px;
+- table布局: 父元素 display: table; 左右 width: 100px; 三个元素display: table-cell;
+- 弹性(flex)布局:父元素 display: flex; 左右 width: 100px;
+- 网格（gird）布局：
+
 #### 2. 对于一些常见css的书写:比如文本溢出显示省略号
 
 ```css
@@ -74,3 +82,28 @@ display:-webkit-box
 - flex： 0 1 auto
 - 表示flex-grow 为0 flex-shrink 为1 flex basis为auto
 - align-self
+
+#### 5.垂直居中和水平居中
+- line-height
+- absolute+ margin(负值)
+- absolute + margin auto
+- absolute + translate
+- Flex + align-items
+- Flex + margin auto
+- Flex + align-self
+- grid +align-items
+- calc
+
+#### 6. BFC
+BFC（Block formatting context），即块级格式化上下文，它作为HTML页面上的一个独立渲染区域，只有区域内元素参与渲染，且不会影响其外部元素。简单来说，可以将 BFC 看做是一个“围城”，外面的元素进不来，里面的元素出不去
+形成BFC的条件:
+
+1、浮动元素，float 除 none 以外的值；
+2、定位元素，position（absolute，fixed）；
+3、display 为以下其中之一的值 inline-block，table-cell，table-caption；
+4、overflow 除了 visible 以外的值（hidden，auto，scroll）；
+
+BFC 一般用来解决以下几个问题
+边距重叠问题
+消除浮动问题
+自适应布局问题
