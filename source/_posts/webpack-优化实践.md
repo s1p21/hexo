@@ -129,4 +129,4 @@ module.exports = {
 
 
 
-一、优化思路： 添加yarn add speed-measure-webpack-plugin 插件，测量出在你的构建过程中，每一个 Loader 和 Plugin 的执行时长
+优化思路： 添加yarn add speed-measure-webpack-plugin 插件，测量出在你的构建过程中，每一个 Loader 和 Plugin 的执行时长
