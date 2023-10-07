@@ -11,7 +11,7 @@ tags: [面试, http]
 * 请求报文：
 - accept-charset
 - accept-encoding
-- accept-lanuage
+- accept-language
 - Host
 - User-agent
 - connection
@@ -24,10 +24,10 @@ tags: [面试, http]
 - content-encoding
 - content-language
 - keep-alive
-- Etag
+- ETag
 - cache-control
 - Expires
-- last-Modifed
+- last-Modified
 - access-control-allow-origin：
 
 
@@ -97,7 +97,7 @@ udp: 面向非连接、传输不可靠、用于传输少量数据(数据包模�
 505 HTTP版本未被支持
 
 
-#### webscoket的连接原理
+#### websocket的连接原理
 
 轮询
 客户端通过一定的时间间隔以频繁请求的方式向服务器发送请求，来保持客户端和服务器端的数据同步。问题很明显，当客户端以固定频率向服务器端发送请求时，服务器端的数据可能并没有更新，带来很多无谓请求，浪费带宽，效率低下。
@@ -114,11 +114,11 @@ WebSocket 需要类似 TCP 的客户端和服务器端通过握手连接，连�
 跨域是指一个域下的文档或脚本试图去请求另一个域下的资源
 
 什么是同源策略？
-同源策略/SOP（Same origin policy）是一种约定，由Netscape公司1995年引入浏览器，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到XSS、CSFR等攻击。所谓同源是指"协议+域名+端口"三者相同，即便两个不同的域名指向同一个ip地址，也非同源。
+同源策略/SOP（Same origin policy）是一种约定，由Netscape公司1995年引入浏览器，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到XSS、CSRF等攻击。所谓同源是指"协议+域名+端口"三者相同，即便两个不同的域名指向同一个ip地址，也非同源。
 同源策略限制以下几种行为：
-1.) Cookie、LocalStorage 和 IndexDB 无法读取
-2.) DOM 和 Js对象无法获得
-3.) AJAX 请求不能发送
+1. Cookie、LocalStorage 和 IndexDB 无法读取
+2. DOM 和 Js对象无法获得
+3. AJAX 请求不能发送
 
 跨域解决方案
 1、 通过jsonp跨域
@@ -130,6 +130,16 @@ WebSocket 需要类似 TCP 的客户端和服务器端通过握手连接，连�
 7、 nginx代理跨域
 8、 nodejs中间件代理跨域
 9、 WebSocket协议跨域
+
+#### 预检请求
+
+预检请求是在进行跨域资源共享 CORS 时，由浏览器自动发起的一种 OPTIONS 请求。它的存在是为了保障安全，并允许服务器决定是否允许跨域请求。
+
+跨域请求是指在浏览器中向不同域名、不同端口或不同协议的资源发送请求。出于安全原因，浏览器默认禁止跨域请求，只允许同源策略。而当网页需要进行跨域请求时，浏览器会自动发送一个预检请求，以确定是否服务器允许实际的跨域请求。
+
+预检请求中包含了一些额外的头部信息，如 Origin 和 Access-Control-Request-Method 等，用于告知服务器实际请求的方法和来源。服务器收到预检请求后，可以根据这些头部信息，进行验证和授权判断。如果服务器认可该跨域请求，将返回一个包含 Access-Control-Allow-Origin 等头部信息的响应，浏览器才会继续发送实际的跨域请求。
+
+使用预检请求机制可以有效地防范跨域请求带来的安全风险，保护用户数据和隐私。
 
 ### CSP
 该安全策略的实现基于一个称作 Content-Security-Policy的 HTTP 首部。
