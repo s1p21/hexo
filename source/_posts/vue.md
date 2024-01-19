@@ -256,8 +256,6 @@ const router = new VueRouter({
 
 3. 挂载方式：在Vue 3中使用Composition API，所以Vue Router也要以插件的形式进行挂载。在Vue Router 4中，使用useRouter和useRoute两个API来在组件中获取到路由实例和路由对象。而在Vue Router 3中，则是直接在组件实例中使用this.$router来获取路由实例，并使用this.$route来获取路由对象。
 
-因为 vue3 的 composition api，vue-router 的挂载方式以插件来挂载，而在 3.x 中通过属性进行挂载
-
 ```js
 // 4.x
 
