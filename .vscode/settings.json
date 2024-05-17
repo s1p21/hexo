@@ -1,0 +1,78 @@
+{
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "eslint.format.enable": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "[less]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "editor.fontSize": 16,
+    "cSpell.words": [
+        "antd",
+        "aquasite",
+        "bohrapi",
+        "btns",
+        "Chating",
+        "chatpdf",
+        "chatui",
+        "clsx",
+        "dataframe",
+        "dfire",
+        "fetchpri",
+        "fetchpub",
+        "floder",
+        "gbsa",
+        "goapi",
+        "HGNC",
+        "Imgid",
+        "imgt",
+        "Keycloak",
+        "localforage",
+        "Markush",
+        "mlops",
+        "MMPBGBSA",
+        "nocaptcha",
+        "nvcdata",
+        "oprt",
+        "phar",
+        "pharma",
+        "Pharmacophore",
+        "pharmacophores",
+        "pids",
+        "plddt",
+        "Pymatgen",
+        "qrcode",
+        "QSAR",
+        "RCSB",
+        "rdkit",
+        "reback",
+        "reduxjs",
+        "regen",
+        "repr",
+        "ruilian",
+        "scen",
+        "sider",
+        "Thres",
+        "tiefblue",
+        "Umami",
+        "Unifinder",
+        "userguide",
+        "uuidv",
+        "xmark"
+    ],
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    }
+}
