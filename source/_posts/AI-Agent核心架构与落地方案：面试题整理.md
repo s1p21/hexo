@@ -9,6 +9,10 @@ categories: [面试题]
 
 > 整理自抖音视频：[面试官问：AI Agent 常见核心架构与落地方案有哪些？](https://www.douyin.com/jingxuan?modal_id=7676931818318318863)
 
+![AI Agent 核心架构面试题视频封面](/images/ai-agent-architecture-video-cover.jpeg)
+
+*配图：原视频封面。文章内容根据视频章节和观点整理。*
+
 ## 一、面试中的推荐回答
 
 AI Agent 的核心不是简单地调用一次大模型，而是让模型围绕目标进行任务拆解、工具调用、结果观察和必要的纠错。实际落地时，需要在**任务完成能力、执行效率、响应延迟和调用成本**之间做平衡。

@@ -463,6 +463,7 @@ libs:
   css:
     matery: /css/matery.css
     mycss: /css/my.css
+    reactBits: /css/react-bits.css
     post: /css/post.css
     reward: /css/reward.css
     dark: /css/dark.css
@@ -484,6 +485,7 @@ libs:
     justifiedGallery: /libs/justifiedGallery/justifiedGallery.min.css
   js:
     matery: /js/matery.js
+    reactBits: /js/react-bits.js
     jquery: /libs/jquery/jquery-3.6.0.min.js #3.6.0 20211109
     materialize: /libs/materialize/materialize.min.js # 1.0.0
     masonry: /libs/masonry/masonry.pkgd.min.js # v4.0.0
