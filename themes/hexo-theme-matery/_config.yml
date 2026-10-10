@@ -578,7 +578,7 @@ reprint:
 
 # DaoVoice online contact
 daovoice:
-  enable: true
+  enable: false
   app_id: 89660989
 
 # Tidio online contact
