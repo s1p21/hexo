@@ -1,8 +1,8 @@
 ---
-title: 面试-JS
+
+## title: 面试-JS
 date: 2022-11-29 17:13:37
 tags: [面试, JS]
----
 
 #### 1.  js 垃圾回收机制
 
@@ -13,19 +13,19 @@ tags: [面试, JS]
 调用堆的数据回收:v8 把堆分为`新生代`和`老生代`,新生代存放的是生存时间短的对象，老生代存放生存时间长的对象
 执行流程:
 
-1.  标记活动对象和非活动对象
-2.  回收非活动对象占据的内存
-3.  内存整理。整理内存碎片
+1. 标记活动对象和非活动对象
+2. 回收非活动对象占据的内存
+3. 内存整理。整理内存碎片
 
 新生代的垃圾回收，将新生代空间内存分为两个区域，一半是对象区域，一半是空闲区域，当对象区域写满后，需要执行一次垃圾清理操作。在垃圾回收过程中，对使用对象进行标记。在垃圾清理阶段，把存活的对象复制到空闲区域，并有序排列这些对象。同时经过两次垃圾回收依然还存活的对象，将放置在老生区中
 
 老生代的垃圾回收，使用标记清除。通过遍历调用栈，能够到达的元素称为活动对象，没有对象的可以判断为垃圾数据，进行标记。之后进行垃圾清除，这个是直接删除标记数据。清除之后，产生大量不连续的内存碎片，于是产生了标记-整理的过程。对所有的可以活动的对象向一端移动，清理边界以外的内存，从而占据连续的内存块。
 
 #### 2. 模块化
+
 AMD推崇依赖前置，在定义模块的时候就要声明其依赖的模块 CMD推崇就近依赖，只有在用到某个模块的时候再去require
 CommonJS通过同步的方式加载模块，其输出的模块是一个拷贝对象，所以修改原的模块不会对被引入的模块内部产生影响，且模块在代码运行的时候加载
 es6模块是在代码编译时输出接口即编译时加载，es6是通过命令来指定导出和加载，且导出的是模块中的只读引用，如果原始模块中的值被改变了，那么加载的值也会随之改变，所以是动态引用
-
 
 ##### CommonJS 与 ESM 的区别
 
@@ -49,7 +49,6 @@ ESM的导入、导出语句都是声明式的，导入和导出语句必须位�
 
 导入一个模块时，CommonJS中获取的是一份值的拷贝，而在ESM中，获取的是值的动态映射，并且这个映射是只读的。
 
-
 浏览器中 ES6 的模块化支持、node 采用 commonJS 的模块化支持
 
 - es6 `import/export`
@@ -59,6 +58,8 @@ ESM的导入、导出语句都是声明式的，导入和导出语句必须位�
 `require` 与`import`的区别:
 
 - `require`支持动态导入,`import`不支持
+
+
 
 #### 3. 原型和原型链
 
@@ -74,9 +75,8 @@ ESM的导入、导出语句都是声明式的，导入和导出语句必须位�
 
 特点: JavaScript 对象是通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变。
 
-
-
 ##### ES5与ES6继承的区别
+
 ES5的继承是先创建子类的实例, 然后再创建父类的方法添加到this上.
 
 ES6的继承是先创建父类的实例对象this(必须先调用super方法), 再调用子类的构造函数修改this.
@@ -84,8 +84,6 @@ ES6的继承是先创建父类的实例对象this(必须先调用super方法), �
 通过关键字class定义类, extends关键字实现继承. 子类必须在constructor方法中调用super方法否则创建实例报错. 因为子类没有this对象, 而是使用父类的this, 然后对其进行加工
 
 super关键字指代父类的this, 在子类的构造函数中, 必须先调用super, 然后才能使用this
-
-
 
 #### 执行上下文和闭包
 
@@ -98,15 +96,14 @@ super关键字指代父类的this, 在子类的构造函数中, 必须先调用s
 1）使用闭包可以访问函数中的变量。
 
 2）让变量值始终保持在内存中。
+
 #### 4.介绍节流防抖原理、区别以及应用
 
 节流：事件触发后，规定时间内，事件处理函数不能再次被调用。也就是说在规定的时间内，函数只能被调用一次，且是最先被触发调用的那次。
 
 防抖：多次触发事件，事件处理函数只能执行一次，并且是在触发操作结束时执行。也就是说，当一个事件被触发准备执行事件函数前，会等待一定的时间（这时间是码农自己去定义的，比如 1 秒），如果没有再次被触发，那么就执行，如果被触发了，那就本次作废，重新从新触发的时间开始计算，并再次等待 1 秒，直到能最终执行！
 
-使用场景：
-节流：滚动加载更多、搜索框搜的索联想功能、高频点击、表单重复提交……
-防抖：搜索框搜索输入，并在输入完以后自动搜索、手机号，邮箱验证输入检测、窗口大小 resize 变化后，再重新渲染。
+使用场景： 节流：滚动加载更多、搜索框搜索联想功能、高频点击、表单重复提交…… 防抖：搜索框搜索输入，并在输入完以后自动搜索、手机号，邮箱验证输入检测、窗口大小 resize 变化后，再重新渲染。
 
 ```js
 // 节流
@@ -133,6 +130,8 @@ function debounce(fn, delay) {
 }
 ```
 
+
+
 #### 5. 函数式编程
 
 - 纯函数(确定性函数): 是函数式编程的基础，可以使程序变得灵活，高度可拓展，可维护；
@@ -149,6 +148,8 @@ function debounce(fn, delay) {
 - 不依赖、不修改任何函数外部的数据；
 - 完全可控，参数一样，返回值一定一样: 例如函数不能包含 new Date()或者 Math.rando()等这种不可控因素；
 - 引用透明；
+
+
 
 #### 6. call、 apply 和 bind 的区别
 
@@ -186,6 +187,8 @@ Function.prototype.myapply = function(context, args) {
 };
 ```
 
+
+
 #### 7. reduce 参数
 
 arr.reduce(callback,[initialValue])
@@ -220,6 +223,8 @@ Array.prototype.myReduce = function(fn,initialValue) {
 }
 ```
 
+
+
 #### 8. 深拷贝
 
 ```js
@@ -246,6 +251,8 @@ function deepClone=function() {
 }
 ```
 
+
+
 #### 9. new 关键字做了什么
 
 做了四件事，1，创建空对象，2，将空对象的`__proto__`指向构造函数的`prototype`3，构造函数的 this 作用域赋给新对象，4，返回原始值需要忽略，返回对象需要正常处理
@@ -263,11 +270,13 @@ function _new(constructor, ...arg) {
 }
 ```
 
-#### 10. 判断类型 三种方式 
+
+
+#### 10. 判断类型 三种方式
+
 typeOf、  instanceOf、Object.prototype.toString.call()
 typeOf 不能区分Array和Object
 instanceOf 不能区分基本类型
-
 
 #### 11. 手动实现一个 instanceOf
 
@@ -287,6 +296,8 @@ function isInstanceOf(child, fun) {
   return true;
 }
 ```
+
+
 
 #### 12. 观察者模式和发布订阅模式
 
@@ -338,6 +349,8 @@ class PubSub() {
     }
 }
 ```
+
+
 
 #### 13. 虚拟 DOM 和真实 DOM 的转换
 
@@ -413,13 +426,16 @@ function parseVNode(vnode) {
 
 
 #### 15. node 的eventloop
+
  node的 事件循环有times, pending callbacks(I/o callbacks, idle prepare), poll,check,close callbacks
+
 - times 执行setTimeOut 和setTimeInterval
 - check 直接执行setTimeImmediate
 
 
 
 #### 16. ajax
+
 readyState 0 表示 请求还未初始化，尚未调用 open() 方法。
 1 表示 已建立服务器链接，open() 方法已经被调用。
 2 表示 请求已接受，send() 方法已经被调用，并且头部和状态已经可获得。
@@ -448,13 +464,16 @@ function ajax(url, method) {
 ```
 
 
+
 #### 17. flutter 的生命周期
+
 分为两种情况，
 一个是statelessWidget 其生命周期是constructor、build、deactive、dispose
 另外一个是statefulWidget，其生命周期是constructor、initState、didChangeDependencies,build、didUpdate Widget、deactive、dispose
 
 #### 18. js 加载的async 和defer的区别
-async script标签设置了这个值，则说明引入的js需要<strong>异步加载和执行</strong>
+
+async script标签设置了这个值，则说明引入的js需要**异步加载和执行**
 在有async的情况下脚本异步加载和执行，并且不会阻塞页面加载，但是也并不会保证其加载的顺序，如果多个async优先执行，则先加载好的js文件，所以使用此方式加载的js文件最好不要包含其他依赖
 
 defer
@@ -464,9 +483,11 @@ defer
 如果只有defer，那么脚本会在页面解析完毕之后执行。
 
 #### 19. 虚拟列表
+
 可见区域
 
-* 列表高度是固定的，条数计算
+- 列表高度是固定的，条数计算
+
 ```js
 const height = 60
 const bufferSize = 5
@@ -474,13 +495,15 @@ this.visibleCount = Math.ceil((window.clientHeight||window.screen.height) / heig
 
 ```
 
-* 列表高度不固定
+- 列表高度不固定
 通过观察者方式，来观察元素是否进入视口。我们会对固定元素的第一个和最后一个分别打上标签，例如把第一个元素的id设置为top，把最后一个元素的id值设置为bottom。
 此时调用异步的api：IntersectionObserver，他能获取到进入到视口的元素，判断当前进入视口的元素是最后个元素，则说明内容是往上滚的，如果进入视口的是第一个元素，则说明内容是往下滚的。
 我们依次保存下当前第一个元素距离顶部的高度和距离底部的高度，赋值给滚动内容元素的paddingTop和paddingBottom，这样内容区域的高度就不会坍塌，依旧保持这传统滚动元素充满列表时的内容高度:
 
 
+
 #### 20. node 的多个通信
+
 通过socket 和HTTP进行通信
 同一台电脑通信可以通过IPC进行通信
 PM2 监听node的原理：
@@ -497,22 +520,25 @@ God在初次执行时会配置cluster，同时监听cluster中的事件：
 在God启动后， 会建立Satan和God的rpc链接，然后调用prepare方法。prepare方法会调用cluster.fork，完成集群的启动.
 
 #### 21. 性能指标：
-* FP（首次绘制）
-* FCP（首次内容绘制 First contentful paint）
-* LCP（最大内容绘制时间 Largest contentful paint）
-* FPS（每秒传输帧数）
-* CLS (累积布局偏移)
-* TTI（页面可交互时间 Time to Interactive）
-* HTTP 请求响应时间
-* DNS 解析时间
-* TCP 连接时间
+
+- FP（首次绘制）
+- FCP（首次内容绘制 First contentful paint）
+- LCP（最大内容绘制时间 Largest contentful paint）
+- FPS（每秒传输帧数）
+- CLS (累积布局偏移)
+- TTI（页面可交互时间 Time to Interactive）
+- HTTP 请求响应时间
+- DNS 解析时间
+- TCP 连接时间
+
+
 
 #### 22. interface 和 type 、 泛型位置
+
 interface 只能定义对象类型。type声明可以声明任何类型。
 
 interface 能够声明合并，两个相同接口会合并。Type声明合并会报错
 type可以类型推导
-
 
 // 定义callback遍历方法 两种方式 应该采用哪一种？
 `type Callback = <T>(item: T) => void`
@@ -521,9 +547,10 @@ type可以类型推导
 
 当泛型出现在内部时，比接口本身并不具备任何泛型定义。而接口代表的函数则会接受一个泛型定义。换句话说接口本身不需要泛型，而在实现使用接口代表的函数类型时需要声明该函数接受一个泛型参数。
 
-当泛型出现在接口中时，比如Callback<T> 代表的是使用接口时需要传入泛型的类型.
+当泛型出现在接口中时，比如Callback 代表的是使用接口时需要传入泛型的类型.
 
 #### 24 箭头函数
+
 this的作用域
 但是没有prototype属性没有构造器特性，所以也就没有所谓的constructor，就不能作为构造器使用。
 箭头函数的作用域不能通过.call、.apply、.bind等语法来改变，这使得箭头函数的上下文将永久不变
@@ -541,6 +568,7 @@ this的作用域
 
 装饰器模式
 在不改变对象自身的基础上，动态地给某个对象添加一些额外的职责
+
 ```js
 function fuc() {
   console.log(2);
@@ -576,6 +604,7 @@ fuc();
 
 访问者模式
 在不改变该对象的前提下访问其结构中元素的新方法
+
 ```js
 // 元素类
 class Student {
@@ -622,7 +651,10 @@ student.accept(mathTeacher); // 数学80
 student.accept(englishTeacher); // 英语60
 ```
 
-### 26. async await 
+
+
+### 26. async await
+
 作用：用同步方式，执行异步操作
 
 总结
@@ -674,6 +706,8 @@ const asyncFn = generatorToAsync(gen)
 asyncFn().then(res => console.log(res))
 ```
 
+
+
 #### 27.实现一个批量请求函数
 
 ```js
@@ -694,11 +728,15 @@ async function run(){
 run();
 ```
 
+
+
 ### 28.Promise then 第二个参数和catch的区别是什么
+
 主要区别就是，如果在then的第一个函数里抛出了异常，后面的catch能捕获到，而then的第二个函数捕获不到。
 then的第二个参数和catch捕获错误信息的时候会就近原则，如果是promise内部报错，reject抛出错误后，then的第二个参数和catch方法都存在的情况下，只有then的第二个参数能捕获到，如果then的第二个参数不存在，则catch方法会捕获到。
 
 ### 29. promise finally 方法实现
+
 调用当前 Promise 的 then 方法返回一个新的 Promise 对象（保证链式调用）
 调用 Promise 中的 resolve 方法进行返回
 
@@ -718,9 +756,13 @@ Promise.prototype.finally = function (callback) {
 };
 ```
 
+
+
 ### 30. sleep函数的多种实现
+
 JS没有语言内置的休眠（sleep or wait）函数，所谓的sleep只是实现一种延迟执行的效果
 等待指定时间后再执行对应方法
+
 - 循环阻止
 - 定时器
 - promise
@@ -764,7 +806,10 @@ sleep3(fn, 2000);
 sleep4(fn, 2000);
 ```
 
+
+
 ### 手写map
+
 ```js
 Array.prototype.selfMap = function(fn, content) {
   // map中的第二个参数作为fn函数的this
@@ -783,8 +828,12 @@ let arr = [1, 2, 3];
 console.log(arr.selfMap(item => item * 2)); // [2, 4, 6]
 ```
 
+
+
 ### 前端错误捕获
+
 错误信息分为以下几种：
+
 - JS 代码运行错误、语法错误等
 - 异步错误等
 - 静态资源加载错误
@@ -794,6 +843,7 @@ try/catch 只能捕获常规的运行错误，语法错误和异步错误无法�
 window.onerror 可以捕获常规的错误、异步错误、但不能捕获资源错误
 window.addEventListener 当静态资源加载失败时，会触发error事件
 promise错误，无法被以上几种捕获，可通过unhandledrejection 事件来处理
+
 ```js
 // unhandledrejection 可以捕获Promise中的错误 ✅
 window.addEventListener("unhandledrejection", function(e) {
@@ -805,6 +855,7 @@ window.addEventListener("unhandledrejection", function(e) {
 ```
 
 vue 错误 window.onerror 和 error 事件不能捕获到常规的代码错误,vue 通过 Vue.config.errorHander 来捕获异常：
+
 ```js
 Vue.config.errorHandler = (err, vm, info) => {
     console.log('进来啦~', err);
@@ -819,6 +870,7 @@ react项目中，可以在 componentDidCatch 中将捕获的错误上报
 
 接口错误
 1）拦截XMLHttpRequest请求示例：
+
 ```js
 function xhrReplace() {
   if (!("XMLHttpRequest" in window)) {
@@ -881,7 +933,9 @@ function replaceAop(source, name, fn) {
   }
 }
 ```
+
 拦截fetch为例
+
 ```js
 function fetchReplace() {
   if (!("fetch" in window)) {
@@ -936,7 +990,9 @@ function fetchReplace() {
 ```
 
 
+
 ### 首屏加载时间计算
+
 首屏加载时间和首页加载时间不一样，首屏指的是屏幕内的dom渲染完成的时间
 比如首页很长需要好几屏展示，这种情况下屏幕以外的元素不考虑在内
 计算首屏加载时间流程
@@ -951,14 +1007,15 @@ function fetchReplace() {
 
 5）遍历存放dom的数组，找出最后变化节点的时间，用该时间点减去performance.timing.navigationStart 得出首屏的加载时间
 
-
 ### 图片打点上报的优势：
+
 1）支持跨域，一般而言，上报域名都不是当前域名，上报的接口请求会构成跨域
 2）体积小且不需要插入dom中
 3）不需要等待服务器返回数据
 图片打点缺点是：url受浏览器长度限制
 
 ### 浏览器事件循环机制
+
 事件循环其实就是在事件驱动模式中来管理和执行事件的一套流程。包括两种，一种是事件驱动，另外一种是状态驱动或数据驱动。
 在事件驱动中，当有事件触发后，被触发的事件会按顺序暂时存在一个队列中，待 JS 的同步任务执行完成后，会从这个队列中取出要处理的事件并进行处理
 
@@ -978,8 +1035,8 @@ SVG 是通过 XML 的方式渲染。它的本质是DOM，而复杂的图形，�
 SVG 绘制的时候，不依赖分辨率，是一种矢量图。所以当SVG放缩的时候，不会使得图像失真。
 4、SVG 适合带有大型渲染区域的应用程序：比如谷歌地图、百度地图。
 
-
 ### promise和async/await 的区别
+
 唯一的区别在于 `promise` 和 `async/await` 的执行上下文。
 
 当创建 Promise 并启动异步操作时，创建 Promise 后的代码会继续同步执行。当 Promise 被解析或拒绝时，附加的回调函数会被添加到微任务队列中。微任务队列会在当前任务完成后，但在下一个任务从任务队列中处理出来之前进行处理。这意味着在创建 Promise 之后的任何代码都将在执行附加到 Promise 的回调函数之前执行。
