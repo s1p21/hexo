@@ -1,4 +1,4 @@
-## Docs: https://hexo.io/docs/configuration.html
+﻿## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
@@ -77,7 +77,7 @@ theme: hexo-theme-matery
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/s1p21/s1p21.github.io.git
+  repository: git@github.com:s1p21/s1p21.github.io.git
   branch: master
 
 # emoji 表情支持
